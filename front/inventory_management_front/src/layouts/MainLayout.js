@@ -1,19 +1,24 @@
-import React from 'react';
-import NavBar from '../components/menu/NavBar';
-import SideMenu from '../components/menu/SideMenu';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
+import React, {useState} from 'react';
+import SideBar from '../components/menu/Sidebar';
+import Topbar from '../components/menu/Topbar';
+import { Container } from "reactstrap";
+import classNames from "classnames";
 
 const MainLayout = ({children}) => {
+  const [sidebarIsOpen, setSidebarOpen] = useState(true);
+  const toggleSidebar = () => setSidebarOpen(!sidebarIsOpen);
+  
   return (
-    <Container>
-      <NavBar />
-      <Row>
-        <Col><SideMenu /></Col>
-        <Col>{children}</Col>
-      </Row>
-    </Container>
+    <div className='wrapper'>
+      <SideBar isOpen={sidebarIsOpen} toggleSidebar={toggleSidebar}  />
+      <Container
+        fluid
+        className={classNames("content", { "is-open": sidebarIsOpen })}
+      >
+        <Topbar toggleSidebar={toggleSidebar} />
+        {children}
+      </Container>
+    </div>
   );
 };
 
