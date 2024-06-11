@@ -4,7 +4,7 @@ import MainLayout from '../layouts/MainLayout';
 const DashboardPage = () => {
   return (
     <MainLayout>
-      <div>main</div>
+      Dashboard
     </MainLayout>
   );
 };
