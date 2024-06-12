@@ -26,6 +26,7 @@ public class Inventory {
     @Column(nullable = false)
     private Integer quantity;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
+    @Builder.Default
     private LocalDateTime lastUpdated = LocalDateTime.now();
 }

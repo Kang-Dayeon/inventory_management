@@ -29,5 +29,6 @@ public class User {
     private String email;
 
     @Column(nullable = false, updatable = false)
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 }

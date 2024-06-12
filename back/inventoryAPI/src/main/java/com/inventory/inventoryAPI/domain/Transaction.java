@@ -29,6 +29,7 @@ public class Transaction {
     @Column(nullable = false)
     private Double totalPrice;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
+    @Builder.Default
     private LocalDateTime transactionDate = LocalDateTime.now();
 }

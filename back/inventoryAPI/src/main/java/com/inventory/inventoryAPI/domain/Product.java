@@ -28,9 +28,14 @@ public class Product {
     @Column(nullable = false)
     private int price;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private List<String> imageList;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<ProductImage> imageList;
 
     @Column(nullable = false, updatable = false)
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    public void setImageList(List<ProductImage> imageList){
+        this.imageList = imageList;
+    }
 }
