@@ -20,7 +20,7 @@ public class Inventory {
     private Long inventoryId;
 
     @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
+    @JoinColumn(name = "product_id", referencedColumnName = "productId")
     private Product product;
 
     @Column(nullable = false)
