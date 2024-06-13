@@ -1,35 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
 import MainLayout from '../layouts/MainLayout';
 import { Table } from "reactstrap";
+import useCustomMove from '../hooks/useCustomMove';
+import { useEffect } from 'react';
+import { getList } from '../api/productApi';
 
-const dumyProducts = [
-{
-  id: 0,
-  p_name: 'test1',
-  p_description: 'test1',
-  price: 1000,
-  supplier: 'ttttt',
-  quantity: 2
-},
-{
-  id: 1,
-  p_name: 'test2',
-  p_description: 'test2',
-  price: 1000,
-  supplier: 'dddd',
-  quantity: 13
-},
-{
-  id: 2,
-  p_name: 'test3',
-  p_description: 'test3',
-  price: 1000,
-  supplier: 'sssce',
-  quantity: 333
-},
-]
+const initState = {
+  dtoList: [],
+  pageNumList: [],
+  pageRequestDTO: null,
+  prev: false,
+  next: false,
+  totalCount: 0,
+  prevPage: 0,
+  nextPage: 0,
+  totalPage: 0,
+  current: 0
+}
 
 const Product = () => {
+  const {page, size, refresh, moveToList, moveToRead} = useCustomMove()
+  const [serverData, setServerData] = useState(initState);
+  
+  useEffect(() => {
+    getList({page, size}).then(data => {
+      console.log(data)
+      setServerData(data)
+    })
+  }, [page, size, refresh])
+
   return (
     <MainLayout>
       <h3>Product List</h3>
@@ -56,25 +55,27 @@ const Product = () => {
         </tr>
       </thead>
       <tbody>
-        {dumyProducts.map((product) => 
+        {serverData.dtoList.map((product) => 
             <tr>
             <th scope="row">
               {product.id}
             </th>
             <td>
-              {product.p_name}
+              {product.name}
             </td>
             <td>
-              {product.p_description}
+              {product.description}
             </td>
             <td>
               {product.price}
             </td>
             <td>
-              {product.quantity}
+              재고
+              {/* {product.quantity} */}
             </td>
             <td>
-              {product.supplier}
+              거래처
+              {/* {product.supplier} */}
             </td>
             </tr>
           )}
