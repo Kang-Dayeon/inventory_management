@@ -9,6 +9,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    @Query("select p, pi from Product p left join p.imageList pi where pi.ord = 0 and p.delFlag = false")
+    @Query("select p, pi, i.quantity from Product p " +
+            "left join p.imageList pi " +
+            "left join p.inventories i " +
+            "where pi.ord = 0 and p.delFlag = false")
     Page<Object[]> selectList(Pageable pageable);
 }

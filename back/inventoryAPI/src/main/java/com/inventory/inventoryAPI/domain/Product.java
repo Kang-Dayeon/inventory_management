@@ -27,6 +27,10 @@ public class Product {
 
     private boolean delFlag;
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Inventory> inventories = new ArrayList<>();
+
     @ElementCollection
     @Builder.Default
     private List<ProductImage> imageList = new ArrayList<>();

@@ -21,8 +21,9 @@ public class ProductController {
     public ProductDTO createProduct(@RequestParam("name") String name,
                                     @RequestParam("description") String description,
                                     @RequestParam("price") int price,
-                                    @RequestPart("images")List<MultipartFile> images) throws IOException {
-        return productService.createProduct(name, description, price, images);
+                                    @RequestPart("images")List<MultipartFile> images,
+                                    @RequestParam("quantity") int quantity) throws IOException {
+        return productService.createProduct(name, description, price, images, quantity);
     }
 
     @GetMapping("/{productId}")
