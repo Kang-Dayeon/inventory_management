@@ -4,6 +4,7 @@ import { Table } from "reactstrap";
 import useCustomMove from '../hooks/useCustomMove';
 import { useEffect } from 'react';
 import { getList } from '../api/productApi';
+import moment from 'moment';
 
 const initState = {
   dtoList: [],
@@ -52,6 +53,9 @@ const Product = () => {
           <th>
             Supplier
           </th>
+          <th>
+            Create Date
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -70,12 +74,14 @@ const Product = () => {
               {product.price}
             </td>
             <td>
-              재고
-              {/* {product.quantity} */}
+              {product.quantity}
             </td>
             <td>
               거래처
               {/* {product.supplier} */}
+            </td>
+            <td>
+              {moment(product.createdAt).format('YYYY.MM.DD')}
             </td>
             </tr>
           )}
