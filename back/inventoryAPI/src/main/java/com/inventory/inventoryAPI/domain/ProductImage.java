@@ -1,26 +1,17 @@
 package com.inventory.inventoryAPI.domain;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.Embeddable;
+import lombok.*;
 
-@Entity
+@Embeddable
 @Getter
-@Table(name = "ProductImages")
+@ToString
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductImage {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long imageId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "productId", nullable = false)
-    private Product product;
-
-    @Column(nullable = false)
     private String imageUrl;
+
+    @Setter
+    private int ord; // 순번
 }

@@ -1,5 +1,7 @@
 package com.inventory.inventoryAPI.controller;
 
+import com.inventory.inventoryAPI.dto.PageRequestDTO;
+import com.inventory.inventoryAPI.dto.PageResponseDTO;
 import com.inventory.inventoryAPI.dto.ProductDTO;
 import com.inventory.inventoryAPI.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,16 @@ public class ProductController {
                                     @RequestParam("price") int price,
                                     @RequestPart("images")List<MultipartFile> images) throws IOException {
         return productService.createProduct(name, description, price, images);
+    }
+
+    @GetMapping("/{productId}")
+    public ProductDTO read(@PathVariable("productId") Long productId) {
+        return productService.getOne(productId);
+    }
+
+    @GetMapping("/")
+    public PageResponseDTO<ProductDTO> list(PageRequestDTO pageRequestDTO){
+        return productService.getList(pageRequestDTO);
     }
 
 
