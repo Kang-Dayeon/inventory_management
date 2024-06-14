@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import moment, { invalid } from 'moment';
+import moment from 'moment';
 import { getList, postAdd } from '../api/productApi';
 import useCustomMove from '../hooks/useCustomMove';
 import MainLayout from '../layouts/MainLayout';
@@ -14,6 +14,7 @@ import {
   Button, 
   FormFeedback 
 } from "reactstrap";
+import useCustomInput from '../hooks/useCustomInput';
 
 const initState = {
   dtoList: [],
@@ -32,14 +33,13 @@ const initProduct = {
   name: '',
   description: '',
   price: 0,
-  quantity: 0,
-  images: []
+  quantity: 0
 }
 
 const Product = () => {
   const {page, size, refresh, moveToList, moveToRead} = useCustomMove()
+  const {inputData, resetInput, handleChangeInput} = useCustomInput(initProduct)
   const [serverData, setServerData] = useState(initState)
-  const [product, setProduct] = useState(initProduct)
   const [productResult, setProductResult] = useState(null)
   const [errors, setErrors] = useState({
     name: false,
@@ -50,15 +50,7 @@ const Product = () => {
 
   const uploadRef = useRef(null);
 
-  const handleChangeInput = (e) => {
-    const { name, value } = e.target
-    setProduct(prevProduct => ({
-      ...prevProduct,
-      [name]: value
-    }));
-  }
-
-  const handleClickAdd = () => {
+  const handleClickAdd = async () => {
     const formData = new FormData()
 
     const images = uploadRef.current.files
@@ -67,42 +59,47 @@ const Product = () => {
       formData.append("images", images[i])
     }
 
-    formData.append("name", product.name)
-    formData.append("description", product.description)
-    formData.append("price", product.price)
-    formData.append("quantity", product.quantity)
+    formData.append("name", inputData.name)
+    formData.append("description", inputData.description)
+    formData.append("price", inputData.price)
+    formData.append("quantity", inputData.quantity)
 
     // 입력 필드의 유효성 검사
-    if (!product.name || !product.description || product.price === 0 || !images) {
-      const newErrors = {
-        name: !product.name,
-        description: !product.description,
-        price: product.price === 0,
-        images: !images
-      };
-      setErrors(newErrors);
+    if (!inputData.name || !inputData.description || inputData.price === 0 || !images) {
+      setErrors({
+        name: !inputData.name,
+        description: !inputData.description,
+        price: inputData.price === 0,
+        images: images
+      });
       alert("Please fill out all required fields.")
       return;
     }
 
-    postAdd(formData).then((data) => {
-      setProductResult({...data})
-    })
+    try {
+      const data = await postAdd(formData);
+      setProductResult({ ...data });
+    } catch (error) {
+      console.error("There was an error with the request:", error);
+    }
   }
   
   useEffect(() => {
     getList({page, size}).then(data => {
       setServerData(data)
     })
-    console.log(serverData)
   }, [page, size, refresh])
 
   useEffect(() => {
-    moveToList('product')
-    setProductResult(null)
-    setProduct(initProduct)
-    uploadRef.current.value = ''
-  }, [productResult])
+    if (productResult) {
+      moveToList('product');
+      setProductResult(null);
+      resetInput(initProduct)
+      if (uploadRef.current) {
+        uploadRef.current.value = '';
+      }
+    }
+  }, [productResult, moveToList]);
 
   return (
     <MainLayout>
@@ -118,7 +115,7 @@ const Product = () => {
               name="name"
               placeholder="Product Name"
               type="text"
-              value={product.name}
+              value={inputData.name}
               onChange={handleChangeInput}
               invalid={errors.name}
             />
@@ -138,7 +135,7 @@ const Product = () => {
               name="description"
               placeholder="Product Description"
               type="textarea"
-              value={product.description}
+              value={inputData.description}
               onChange={handleChangeInput}
               invalid={errors.description}
             />
@@ -158,7 +155,7 @@ const Product = () => {
               name="price"
               placeholder="ProductPrice"
               type="number"
-              value={product.price}
+              value={inputData.price}
               onChange={handleChangeInput}
               invalid={errors.price}
             />
@@ -178,7 +175,7 @@ const Product = () => {
               name="quantity"
               placeholder="quantity"
               type="number"
-              value={product.quantity}
+              value={inputData.quantity}
               onChange={handleChangeInput}
             />
           </FormGroup>
@@ -217,7 +214,7 @@ const Product = () => {
       <div>
         <h3 className='font-weight-bold'>Product List</h3>
         {/* table */}
-        <Table>
+        <Table className='mt-3'>
           <thead>
             <tr>
               <th>
