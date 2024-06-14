@@ -106,6 +106,24 @@ a:focus {
   padding: 20px;
   margin-left: 0;
   height: 100vh;
+  overflow-y: scroll;
+}
+/* ---------------------------------------------------
+    PAGINATION
+----------------------------------------------------- */
+.page-item.active .page-link{
+  background-color: #5466b3;
+  border-color: #5466b3;
+}
+
+.page-link{
+  color: #5466b3;
+}
+/* ---------------------------------------------------
+    BUTTON
+----------------------------------------------------- */
+.btn-secondary{
+  background-color: #5466b3;
 }
 
 @media only screen and (max-width: 500px) {
