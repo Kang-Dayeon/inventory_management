@@ -7,24 +7,32 @@ const PaginationComponent = ({serverData, moveToPage, pageName}) => {
       <Pagination aria-label="Page navigation">
 
         {/* prev */}
-        <PaginationItem>
-          <PaginationLink
-            first
-            href='#'
-          />
-        </PaginationItem>
-
         {serverData.prev ? (
           <PaginationItem>
             <PaginationLink
+              first
               onClick={() => moveToPage(pageName, {page: serverData.prevPage})}
-              previous
             />
           </PaginationItem>
         ):(
           <PaginationItem disabled>
             <PaginationLink
-              href="#"
+              first
+            />
+          </PaginationItem>
+        )}
+        
+
+        {serverData.current === 0 ? (
+          <PaginationItem disabled>
+            <PaginationLink
+              previous
+            />
+          </PaginationItem>
+        ):(
+          <PaginationItem>
+            <PaginationLink
+              onClick={() => moveToPage(pageName, {page: serverData.current - 1})}
               previous
             />
           </PaginationItem>
@@ -40,27 +48,37 @@ const PaginationComponent = ({serverData, moveToPage, pageName}) => {
         ))}
 
         {/* next */}
-        {serverData.nextPage ? (
-        <PaginationItem>
-          <PaginationLink
-            onClick={() => moveToPage(pageName, {page: serverData.nextPage})}
-            next
-          />
-        </PaginationItem>
+        {serverData.totalPage === serverData.current ? (
+          <PaginationItem　disabled>
+            <PaginationLink
+              next
+            />
+          </PaginationItem>
         ):(
-        <PaginationItem　disabled>
-          <PaginationLink
-            href="#"
-            next
-          />
-        </PaginationItem>
+          <PaginationItem>
+            <PaginationLink
+              onClick={() => moveToPage(pageName, {page: serverData.current + 1})}
+              next
+            />
+          </PaginationItem>
         )}
-        <PaginationItem>
-        <PaginationLink
-          href="#"
-          last
-        />
-        </PaginationItem>
+
+        {serverData.next ? (
+          <PaginationItem>
+            <PaginationLink
+              onClick={() => moveToPage(pageName, {page: serverData.nextPage})}
+              last
+            />
+          </PaginationItem>
+        ):(
+          <PaginationItem disabled>
+            <PaginationLink
+              last
+            />
+          </PaginationItem>
+        )}
+
+        
         </Pagination>
       </div>
   );
