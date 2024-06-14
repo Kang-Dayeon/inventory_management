@@ -1,9 +1,8 @@
 import React, { lazy, Suspense } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {faSpinner} from "@fortawesome/free-solid-svg-icons"
+import { Spinner } from "reactstrap";
 
-const Loading = <div><FontAwesomeIcon icon={faSpinner} /></div>
+const Loading = <div className='container-fluid d-flex justify-content-center'><Spinner>Loading...</Spinner></div>
 const ProductList = lazy(() => import("../pages/Product"))
 const DashboardPage = lazy(() => import("../pages/DashboardPage"))
 
