@@ -11,3 +11,11 @@ export const getList = async (pageParam) => {
 
   return res.data
 }
+
+export const postAdd = async (product) => {
+  const header = {headers: {'Content-Type': 'multipart/form-data'}}
+
+  const res = await axios.post(`${prefix}/add`, product, header)
+
+  return res.data
+}
