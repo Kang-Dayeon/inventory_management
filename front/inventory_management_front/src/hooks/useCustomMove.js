@@ -21,7 +21,7 @@ const useCustomMove = () => {
   //page=3&size=10 이게 만들어짐
   const queryDefault = createSearchParams({page, size}).toString()
 
-  const moveToList = (pageParam) => {
+  const moveToList = (pageName, pageParam) => {
     let queryStr = ''
 
     if(pageParam){
@@ -34,7 +34,7 @@ const useCustomMove = () => {
     }
     setRefresh(!refresh)
 
-    navigate({pathname: '../', search: queryStr})
+    navigate({pathname: `../${pageName}`, search: queryStr})
   }
 
   const moveToModify = (id) => {
