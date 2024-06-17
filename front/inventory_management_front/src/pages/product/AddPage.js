@@ -1,11 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
-import moment from 'moment';
-import { getList, postAdd } from '../api/productApi';
-import useCustomMove from '../hooks/useCustomMove';
-import MainLayout from '../layouts/MainLayout';
-import PaginationComponent from '../components/common/PaginationComponent';
+import React, {useState, useEffect, useRef} from 'react';
+import useCustomMove from '../../hooks/useCustomMove';
+import { postAdd } from '../../api/productApi';
 import { 
-  Table, 
   Form, 
   FormGroup, 
   Label, 
@@ -14,32 +10,24 @@ import {
   Button, 
   FormFeedback 
 } from "reactstrap";
-import useCustomInput from '../hooks/useCustomInput';
-
-const initState = {
-  dtoList: [],
-  pageNumList: [],
-  pageRequestDTO: null,
-  prev: false,
-  next: false,
-  totalCount: 0,
-  prevPage: 0,
-  nextPage: 0,
-  totalPage: 0,
-  current: 0
-}
+import useCustomInput from '../../hooks/useCustomInput';
+import { getNameList } from '../../api/supplierApi';
 
 const initProduct = {
   name: '',
   description: '',
   price: 0,
-  quantity: 0
+  quantity: 0,
+  supplier: ''
 }
 
-const Product = () => {
-  const {page, size, refresh, moveToList, moveToRead} = useCustomMove()
+const AddPage = () => {
+  const {moveToList} = useCustomMove()
   const {inputData, resetInput, handleChangeInput} = useCustomInput(initProduct)
-  const [serverData, setServerData] = useState(initState)
+
+  const uploadRef = useRef(null);
+
+  const [supplier, setSupplier] = useState(null)
   const [productResult, setProductResult] = useState(null)
   const [errors, setErrors] = useState({
     name: false,
@@ -47,8 +35,6 @@ const Product = () => {
     price: false,
     images: false
   });
-
-  const uploadRef = useRef(null);
 
   const handleClickAdd = async () => {
     const formData = new FormData()
@@ -63,6 +49,7 @@ const Product = () => {
     formData.append("description", inputData.description)
     formData.append("price", inputData.price)
     formData.append("quantity", inputData.quantity)
+    formData.append("supplier", inputData.supplier)
 
     // 입력 필드의 유효성 검사
     if (!inputData.name || !inputData.description || inputData.price === 0 || !images) {
@@ -83,16 +70,17 @@ const Product = () => {
       console.error("There was an error with the request:", error);
     }
   }
-  
+
   useEffect(() => {
-    getList({page, size}).then(data => {
-      setServerData(data)
+    getNameList().then(data => {
+      console.log(data)
+      setSupplier(data)
     })
-  }, [page, size, refresh])
+  },[])
 
   useEffect(() => {
     if (productResult) {
-      moveToList('product');
+      moveToList();
       setProductResult(null);
       resetInput(initProduct)
       if (uploadRef.current) {
@@ -102,9 +90,8 @@ const Product = () => {
   }, [productResult, moveToList]);
 
   return (
-    <MainLayout>
-      <div className='mb-5'>
-        <h3 className='font-weight-bold'>Product ADD</h3>
+    <div className='mb-5'>
+      <h3 className='font-weight-bold'>Product ADD</h3>
         <Form className='bg-white p-4 rounded shadow-md'>
           <FormGroup>
             <Label for="name" className='font-weight-bold'>
@@ -202,78 +189,32 @@ const Product = () => {
               This is some placeholder block-level help text for the above input. It‘s a bit lighter and easily wraps to a new line.
             </FormText>
           </FormGroup>
-          
+
+          {supplier ? (
+            <FormGroup>
+            <Label for="supplier">
+              Select
+            </Label>
+            <Input
+              id="supplier"
+              name="select"
+              type="select"
+            >
+              {supplier.map((name) => (
+                <option>{name}</option>
+              ))}
+            </Input>
+          </FormGroup>
+          ) : null}
+        
           <FormGroup className='d-flex justify-content-end'>
             <Button onClick={handleClickAdd} className='font-weight-bold'>
               ADD
             </Button>
           </FormGroup>
         </Form>
-      </div>
-      
-      <div>
-        <h3 className='font-weight-bold'>Product List</h3>
-        {/* table */}
-        <Table className='mt-3'>
-          <thead>
-            <tr>
-              <th>
-              </th>
-              <th>
-                Name
-              </th>
-              <th>
-                Description
-              </th>
-              <th>
-                Price
-              </th>
-              <th>
-                Quantity
-              </th>
-              <th>
-                Supplier
-              </th>
-              <th>
-                Create Date
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {serverData.dtoList.map((product) => 
-                <tr>
-                <th scope="row">
-                  {product.id}
-                </th>
-                <td>
-                  {product.name}
-                </td>
-                <td>
-                  {product.description}
-                </td>
-                <td>
-                  {product.price}
-                </td>
-                <td>
-                  {product.quantity}
-                </td>
-                <td>
-                  거래처
-                  {/* {product.supplier} */}
-                </td>
-                <td>
-                  {moment(product.createdAt).format('YYYY.MM.DD')}
-                </td>
-                </tr>
-              )}
-          </tbody>
-        </Table>
-
-        <PaginationComponent serverData={serverData} moveToPage={moveToList} pageName={"product"} />
-      </div>
-      
-    </MainLayout>
+    </div>
   );
 };
 
-export default Product;
+export default AddPage;
