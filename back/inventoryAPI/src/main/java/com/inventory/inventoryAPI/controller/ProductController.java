@@ -22,8 +22,9 @@ public class ProductController {
                                     @RequestParam("description") String description,
                                     @RequestParam("price") int price,
                                     @RequestPart("images")List<MultipartFile> images,
-                                    @RequestParam("quantity") int quantity) throws IOException {
-        return productService.createProduct(name, description, price, images, quantity);
+                                    @RequestParam("quantity") int quantity,
+                                    @RequestParam("supplierName") String supplierName) throws IOException {
+        return productService.createProduct(name, description, price, images, quantity, supplierName);
     }
 
     @GetMapping("/{productId}")

@@ -31,6 +31,10 @@ public class Product {
     @Builder.Default
     private List<Inventory> inventories = new ArrayList<>();
 
+    @ManyToOne
+    @JoinColumn(name = "supplier_id")
+    private Supplier supplier;
+
     @ElementCollection
     @Builder.Default
     private List<ProductImage> imageList = new ArrayList<>();

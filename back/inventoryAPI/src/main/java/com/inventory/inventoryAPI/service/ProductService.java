@@ -3,11 +3,14 @@ package com.inventory.inventoryAPI.service;
 import com.inventory.inventoryAPI.domain.Inventory;
 import com.inventory.inventoryAPI.domain.Product;
 import com.inventory.inventoryAPI.domain.ProductImage;
+import com.inventory.inventoryAPI.domain.Supplier;
 import com.inventory.inventoryAPI.dto.PageRequestDTO;
 import com.inventory.inventoryAPI.dto.PageResponseDTO;
 import com.inventory.inventoryAPI.dto.ProductDTO;
+import com.inventory.inventoryAPI.dto.SupplierDTO;
 import com.inventory.inventoryAPI.repository.InventoryRepository;
 import com.inventory.inventoryAPI.repository.ProductRepository;
+import com.inventory.inventoryAPI.repository.SupplierRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,12 +32,15 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final S3UploadService s3UploadService;
     private final InventoryRepository inventoryRepository;
+    private final SupplierRepository supplierRepository;
 
     public ProductDTO getOne(Long productId){
-        Optional<Product> result = productRepository.findById(productId);
-        Product product = result.orElseThrow();
+        Object[] result = (Object[]) productRepository.getProductWithSupplier(productId);
+        Product product = (Product) result[0];
+        ProductImage productImage = (ProductImage) result[1];
+        Supplier supplier = (Supplier) result[2];
 
-        return convertToDto(product);
+        return convertToDto(product, supplier);
     }
 
     public PageResponseDTO<ProductDTO> getList(PageRequestDTO pageRequestDTO){
@@ -44,13 +51,24 @@ public class ProductService {
         Page<Object[]> result = productRepository.selectList(pageable);
 
         List<ProductDTO> dtoList = result.get().map(arr -> {
+            // Logging the content of arr
+            System.out.println("Content of arr: " + Arrays.toString(arr));
+
             ProductDTO productDTO = null;
 
             Product product = (Product) arr[0];
             ProductImage productImage = (ProductImage) arr[1];
+            int quantity = (int) arr[2];
+            Supplier supplier = (Supplier) arr[3];
 
-            Optional<Inventory> inventoryOptional = inventoryRepository.findByProduct(product);
-            int quantity = inventoryOptional.map(Inventory::getQuantity).orElseThrow();
+            SupplierDTO supplierDTO = supplier != null ?
+                    SupplierDTO.builder()
+                            .supplierId(supplier.getSupplierId())
+                            .name(supplier.getName())
+                            .tel(supplier.getTel())
+                            .email(supplier.getEmail())
+                            .build() :
+                    null;
 
             productDTO = ProductDTO.builder()
                     .productId(product.getProductId())
@@ -59,6 +77,7 @@ public class ProductService {
                     .price(product.getPrice())
                     .createdAt(product.getCreatedAt())
                     .quantity(quantity)
+                    .supplier(supplierDTO)
                     .build();
 
             String imageStr = productImage.getImageUrl();
@@ -77,11 +96,22 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductDTO createProduct(String name, String description, int price, List<MultipartFile> images, int quantity) throws IOException {
+    public ProductDTO createProduct(String name,
+                                    String description,
+                                    int price,
+                                    List<MultipartFile> images,
+                                    int quantity,
+                                    String supplierName) throws IOException {
+
+        Optional<Supplier> result = supplierRepository.findByName(supplierName);
+
+        Supplier supplier = result.orElseThrow();
+
         Product product = Product.builder()
                 .name(name)
                 .description(description)
                 .price(price)
+                .supplier(supplier)
                 .build();
 
         List<String> imageUrls = images.stream()
@@ -107,10 +137,10 @@ public class ProductService {
 
         inventoryRepository.save(inventory);
 
-        return convertToDto(saveProduct);
+        return convertToDto(saveProduct, supplier);
     }
 
-    private ProductDTO convertToDto(Product product){
+    private ProductDTO convertToDto(Product product, Supplier supplier){
         List<String> imageUrls = product.getImageList().stream()
                 .map(ProductImage::getImageUrl)
                 .collect(Collectors.toList());
@@ -118,6 +148,14 @@ public class ProductService {
         Optional<Inventory> inventoryOptional = inventoryRepository.findByProduct(product);
         int quantity = inventoryOptional.map(Inventory::getQuantity).orElseThrow();
 
+        SupplierDTO supplierDTO = supplier != null ?
+                SupplierDTO.builder()
+                        .supplierId(supplier.getSupplierId())
+                        .name(supplier.getName())
+                        .tel(supplier.getTel())
+                        .email(supplier.getEmail())
+                        .build() :
+                null;
 
         return ProductDTO.builder()
                 .productId(product.getProductId())
@@ -127,6 +165,7 @@ public class ProductService {
                 .imageList(imageUrls)
                 .createdAt(product.getCreatedAt())
                 .quantity(quantity)
+                .supplier(supplierDTO)
                 .build();
     }
 }

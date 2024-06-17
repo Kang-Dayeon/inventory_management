@@ -18,6 +18,7 @@ public class ProductDTO {
     private String description;
     private int price;
     private int quantity;
+    private SupplierDTO supplier;
     private List<String> imageList;
     private LocalDateTime createdAt;
 }
