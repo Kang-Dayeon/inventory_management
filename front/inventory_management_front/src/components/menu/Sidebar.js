@@ -39,9 +39,9 @@ const SideBar = ({ isOpen, toggleSidebar }) => (
           </NavLink>
         </NavItem>
         <NavItem>
-          <NavLink tag={Link} to={"/contact"}>
+          <NavLink tag={Link} to={"/supplier"}>
            <FontAwesomeIcon icon={faAddressBook} className="mr-2" />
-            Customer
+            Supplier
           </NavLink>
         </NavItem>
       </Nav>
