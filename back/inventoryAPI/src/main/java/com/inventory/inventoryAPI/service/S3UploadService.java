@@ -1,7 +1,9 @@
 package com.inventory.inventoryAPI.service;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.internal.DeleteObjectsResponse;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +42,15 @@ public class S3UploadService {
         }
 
         return amazonS3.getUrl(bucket, fileName).toString();
+    }
+
+    public void deleteFile(String key){
+        try {
+            DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest(bucket, key);
+            amazonS3.deleteObject(deleteObjectRequest);
+        } catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "fail file delete", e);
+        }
     }
 
     private String createFileName(String originalFileName, String dirName) {

@@ -37,5 +37,18 @@ public class ProductController {
         return productService.getList(pageRequestDTO);
     }
 
+    @PutMapping("/{productId}")
+    private ProductDTO modify(@PathVariable("productId") Long productId,
+                              @RequestParam("name") String name,
+                              @RequestParam("description") String description,
+                              @RequestParam("price") int price,
+                              @RequestPart("images")List<MultipartFile> images,
+                              @RequestParam("uploadImageNames") List<String> uploadImageNames,
+                              @RequestParam("quantity") int quantity,
+                              @RequestParam("supplierName") String supplierName) throws IOException {
+
+        return productService.modifyProduct(productId,name,description,price,images,uploadImageNames,quantity,supplierName);
+    }
+
 
 }
