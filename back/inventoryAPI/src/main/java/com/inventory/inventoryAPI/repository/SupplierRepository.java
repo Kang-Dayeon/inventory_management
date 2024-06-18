@@ -1,5 +1,6 @@
 package com.inventory.inventoryAPI.repository;
 
+import com.inventory.inventoryAPI.domain.Product;
 import com.inventory.inventoryAPI.domain.Supplier;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

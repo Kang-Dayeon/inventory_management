@@ -55,6 +55,10 @@ public class Product {
         this.name = name;
     }
 
+    public void changeSupplier(Supplier supplier){
+        this.supplier = supplier;
+    }
+
     public void changeDel(boolean delFlag){
         this.delFlag = delFlag;
     }
