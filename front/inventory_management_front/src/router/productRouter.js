@@ -6,6 +6,7 @@ const Loading = <div className='container-fluid d-flex justify-content-center'><
 const ProductList = lazy(() => import("../pages/product/ListPage"))
 const ProductAdd = lazy(() => import("../pages/product/AddPage"))
 const ProductDetail = lazy(() => import("../pages/product/DetailPage"))
+const ProductModify = lazy(() => import("../pages/product/ModifyPage"))
 
 const productRouter = () => {
   return [
@@ -22,8 +23,12 @@ const productRouter = () => {
       element: <Suspense fallback={Loading}><ProductAdd /></Suspense>
     },
     {
-      path: "read/:productId",
+      path: ":productId",
       element: <Suspense fallback={Loading}><ProductDetail /></Suspense>
+    },
+    {
+      path: "modify/:productId",
+      element: <Suspense fallback={Loading}><ProductModify /></Suspense>
     },
   ]
 };
