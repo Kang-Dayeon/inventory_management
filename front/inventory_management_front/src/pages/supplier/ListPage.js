@@ -66,7 +66,7 @@ const ListPage = () => {
             {serverData.dtoList.map((supplier) => 
                 <tr>
                 <th scope="row">
-                  {supplier.id}
+                  {supplier.supplierId}
                 </th>
                 <td>
                   {supplier.name}

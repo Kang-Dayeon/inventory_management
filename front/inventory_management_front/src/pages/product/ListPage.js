@@ -35,6 +35,7 @@ const ListPage = () => {
   useEffect(() => {
     getList({page, size}).then(data => {
       setServerData(data)
+      console.log(data)
     })
   }, [page, size, refresh])
 
@@ -74,9 +75,9 @@ const ListPage = () => {
         </thead>
         <tbody>
           {serverData.dtoList.map((product) => 
-              <tr onClick={() => moveToRead(product.id)}>
+              <tr onClick={() => moveToRead(product.productId)}>
               <th scope="row">
-                {product.id}
+                {product.productId}
               </th>
               <td>
                 {product.name}

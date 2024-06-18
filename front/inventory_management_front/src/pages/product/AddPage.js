@@ -1,6 +1,8 @@
 import React, {useState, useEffect, useRef} from 'react';
 import useCustomMove from '../../hooks/useCustomMove';
+import useCustomInput from '../../hooks/useCustomInput';
 import { postAdd } from '../../api/productApi';
+import { getNameList } from '../../api/supplierApi';
 import { 
   Form, 
   FormGroup, 
@@ -10,8 +12,6 @@ import {
   Button, 
   FormFeedback 
 } from "reactstrap";
-import useCustomInput from '../../hooks/useCustomInput';
-import { getNameList } from '../../api/supplierApi';
 
 const initProduct = {
   name: '',
@@ -49,7 +49,9 @@ const AddPage = () => {
     formData.append("description", inputData.description)
     formData.append("price", inputData.price)
     formData.append("quantity", inputData.quantity)
-    formData.append("supplier", inputData.supplier)
+    formData.append("supplierName", inputData.supplier)
+
+    console.log(inputData)
 
     // 입력 필드의 유효성 검사
     if (!inputData.name || !inputData.description || inputData.price === 0 || !images) {
@@ -197,11 +199,14 @@ const AddPage = () => {
             </Label>
             <Input
               id="supplier"
-              name="select"
+              name="supplier"
               type="select"
+              onChange={handleChangeInput}
+              value={inputData.supplier}
             >
+              <option>Select</option>
               {supplier.map((name) => (
-                <option>{name}</option>
+                <option key={name} value={name}>{name}</option>
               ))}
             </Input>
           </FormGroup>
