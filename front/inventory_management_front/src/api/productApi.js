@@ -25,3 +25,11 @@ export const postAdd = async (product) => {
 
   return res.data
 }
+
+export const putOne = async (productId, product) => {
+  const header = {headers: {'Content-Type': 'multipart/form-data'}}
+
+  const res = await axios.put(`${prefix}/${productId}`, product, header)
+
+  return res.data
+}
