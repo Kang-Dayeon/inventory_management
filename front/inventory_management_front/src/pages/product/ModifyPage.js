@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import useCustomMove from '../../hooks/useCustomMove';
 import useCustomInput from '../../hooks/useCustomInput';
 import { putOne, getOne } from '../../api/productApi';
+import { getNameList } from '../../api/supplierApi';
 import { 
   Form, 
   FormGroup, 
@@ -21,25 +22,20 @@ const initState = {
   price: 0,
   imageList: [],
   quantity: 0,
-  supplier: '',
+  supplierName: '',
   createAt: ''
 }
 
 const ModifyPage = () => {
   const {productId} = useParams()
-  const {page, size, refresh, moveToList} = useCustomMove()
+  const {moveToList} = useCustomMove()
   const [serverData, setServerData] = useState(initState)
   const {inputData, resetInput, handleChangeInput} = useCustomInput(serverData)
 
   const uploadRef = useRef(null);
   const [supplier, setSupplier] = useState(null)
   const [productResult, setProductResult] = useState(null)
-  const [errors, setErrors] = useState({
-    name: serverData.name,
-    description: serverData.description,
-    price: serverData.price,
-    images: serverData.imageList.length > 0
-  });
+  const [errors, setErrors] = useState({});
 
   const deleteOldImage = (imageName) => {
     const resultImageNames = serverData.imageList.filter((image) => image !== imageName)
@@ -49,62 +45,68 @@ const ModifyPage = () => {
 
   const handleClickAdd = async () => {
     const formData = new FormData()
-
     const images = uploadRef.current.files
 
     for(let i = 0; i < images.length; i++){
-      formData.append("images", images[i])
+      formData.append("newImages", images[i])
+    }
+
+    for(let i = 0; i < serverData.imageList.length; i++){
+      formData.append("uploadImageNames", serverData.imageList[i])
     }
     
     formData.append("name", inputData.name)
     formData.append("description", inputData.description)
     formData.append("price", inputData.price)
     formData.append("quantity", inputData.quantity)
-    formData.append("supplierName", inputData.supplier)
-
-    for(let i = 0; i < serverData.imageList.length; i++){
-      formData.append("uploadImageNames", serverData.imageList[i])
-    }
-
-    console.log(inputData)
+    formData.append("supplierName", inputData.supplierName)
 
     // 입력 필드의 유효성 검사
-    if (!inputData.name || !inputData.description || inputData.price === 0 || inputData.imageList === 0) {
-      setErrors({
-        name: !inputData.name,
-        description: !inputData.description,
-        price: inputData.price === 0,
-        images: inputData.imageList.length === 0
-      });
+    const newErrors = {}
+    if (!inputData.name) newErrors.name = true
+    if (!inputData.description) newErrors.description = true
+    if (inputData.price === 0) newErrors.price = true
+    if (inputData.imageList.length === 0 && images.length === 0) newErrors.images = true
+    if (!inputData.supplierName) newErrors.supplier = true
+
+    if(Object.keys(newErrors).length > 0){
+      setErrors(newErrors);
       alert("Please fill out all required fields.")
       return;
     }
 
     try {
-      const data = await putOne(formData);
-      setProductResult({ ...data });
+      const data = await putOne(productId, formData)
+      setProductResult({ ...data })
     } catch (error) {
-      console.error("There was an error with the request:", error);
+      console.error("There was an error with the request:", error)
     }
   }
 
   useEffect(() => {
+    getNameList().then(data => {
+      setSupplier(data)
+    })
+  },[])
+
+  useEffect(() => {
     getOne(productId).then(data => {
       setServerData(data)
-      console.log(data)
+      console.log(serverData)
+      resetInput(data)
     })
-  }, [page, size, refresh])
+  }, [productId])
 
   useEffect(() => {
     if (productResult) {
-      moveToList();
-      setProductResult(null);
+      moveToList()
+      setProductResult(null)
       resetInput(initState)
       if (uploadRef.current) {
         uploadRef.current.value = '';
       }
     }
-  }, [productResult, moveToList]);
+  }, [productResult, moveToList, resetInput]);
 
   return (
     <div className='mb-5'>
@@ -119,9 +121,9 @@ const ModifyPage = () => {
               name="name"
               placeholder="Product Name"
               type="text"
-              value={serverData.name}
+              value={inputData.name}
               onChange={handleChangeInput}
-              invalid={errors.name}
+              invalid={!!errors.name}
             />
             {errors.name && (
               <FormFeedback>
@@ -139,9 +141,9 @@ const ModifyPage = () => {
               name="description"
               placeholder="Product Description"
               type="textarea"
-              value={serverData.description}
+              value={inputData.description}
               onChange={handleChangeInput}
-              invalid={errors.description}
+              invalid={!!errors.description}
             />
             {errors.description && (
               <FormFeedback>
@@ -159,9 +161,9 @@ const ModifyPage = () => {
               name="price"
               placeholder="ProductPrice"
               type="number"
-              value={serverData.price}
+              value={inputData.price}
               onChange={handleChangeInput}
-              invalid={errors.price}
+              invalid={!!errors.price}
             />
             {errors.price && (
               <FormFeedback>
@@ -179,15 +181,42 @@ const ModifyPage = () => {
               name="quantity"
               placeholder="quantity"
               type="number"
-              value={serverData.quantity}
+              value={inputData.quantity}
               onChange={handleChangeInput}
             />
           </FormGroup>
+
+          {supplier ? (
+            <FormGroup>
+            <Label for="supplier">
+              Select
+            </Label>
+            <Input
+              id="supplier"
+              name="supplier"
+              type="select"
+              value={inputData.supplierName}
+              onChange={handleChangeInput}
+              invalid={!!errors.supplier}
+            >
+              <option value="">Select</option>
+              {supplier.map((name) => (
+                <option key={name} value={name}>{name}</option>
+              ))}
+            </Input>
+            {errors.supplier && (
+              <FormFeedback>
+                Please select supplier
+              </FormFeedback>
+            )}
+          </FormGroup>
+          ) : null}
 
           <FormGroup>
             <Label for="ProductImage" className='font-weight-bold'>
               Product Image
             </Label>
+            <div className="d-flex">
             {serverData.imageList.map(image => (
               <Card
                 style={{
@@ -204,6 +233,7 @@ const ModifyPage = () => {
                 </CardBody>
               </Card>
             ))}
+            </div>
             
             <Input
               innerRef={uploadRef}
@@ -212,7 +242,7 @@ const ModifyPage = () => {
               name="ProductImage"
               type="file"
               accept='image/*'
-              invalid={errors.images}
+              invalid={!!errors.images}
             />
             {errors.images && (
               <FormFeedback>
@@ -223,26 +253,6 @@ const ModifyPage = () => {
               This is some placeholder block-level help text for the above input. It‘s a bit lighter and easily wraps to a new line.
             </FormText>
           </FormGroup>
-
-          {supplier ? (
-            <FormGroup>
-            <Label for="supplier">
-              Select
-            </Label>
-            <Input
-              id="supplier"
-              name="supplier"
-              type="select"
-              onChange={handleChangeInput}
-              value={serverData.supplier}
-            >
-              <option>Select</option>
-              {supplier.map((name) => (
-                <option key={name} value={name}>{name}</option>
-              ))}
-            </Input>
-          </FormGroup>
-          ) : null}
         
           <FormGroup className='d-flex justify-content-end'>
             <Button onClick={handleClickAdd} className='font-weight-bold'>

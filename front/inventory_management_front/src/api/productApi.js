@@ -33,3 +33,9 @@ export const putOne = async (productId, product) => {
 
   return res.data
 }
+
+export const removeOne = async (productId) => {
+  const res = await axios.delete(`${prefix}/${productId}`)
+
+  return res.data
+}

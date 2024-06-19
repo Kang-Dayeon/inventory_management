@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import useCustomMove from '../../hooks/useCustomMove';
-import { getOne } from '../../api/productApi';
+import { getOne, removeOne } from '../../api/productApi';
 import { 
   Card, 
   CardBody, 
@@ -18,16 +18,24 @@ const initState = {
   price: 0,
   imageList: [],
   quantity: 0,
-  supplier: '',
+  supplierName: '',
   createAt: ''
 }
 
 const DetailPage = () => {
   const {productId} = useParams()
-  const {page, size, refresh, moveToModify} = useCustomMove()
+  const {page, size, refresh, moveToModify, moveToList} = useCustomMove()
   const [serverData, setServerData] = useState(initState)
 
-  console.log(productId)
+  const handleClickRemove = async () => {
+    try {
+      await removeOne(productId).then(() => {
+        moveToList()
+      })
+    } catch (error) {
+      console.error("There was an error with the request:", error)
+    }
+  }
 
   useEffect(() => {
     getOne(productId).then(data => {
@@ -57,7 +65,7 @@ const DetailPage = () => {
               在庫：{serverData.quantity}
             </ListGroupItem>
             <ListGroupItem>
-              取引先：{serverData.supplier.name}
+              取引先：{serverData.supplierName}
             </ListGroupItem>
             <ListGroupItem>
               商品の説明：{serverData.description}
@@ -78,7 +86,7 @@ const DetailPage = () => {
           <Button onClick={() => moveToModify(serverData.productId)}>
             Edit
           </Button>
-          <Button color="danger" className="ml-2">
+          <Button color="danger" className="ml-2" onClick={() => handleClickRemove(serverData.productId)}>
             Delete
           </Button>
         </CardBody>

@@ -92,7 +92,7 @@ const ListPage = () => {
                 {product.quantity}
               </td>
               <td>
-                {product.supplier.name}
+                {product.supplierName}
               </td>
               <td>
                 {moment(product.createdAt).format('YYYY.MM.DD')}

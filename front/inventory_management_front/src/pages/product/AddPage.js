@@ -18,7 +18,7 @@ const initProduct = {
   description: '',
   price: 0,
   quantity: 0,
-  supplier: ''
+  supplierName: ''
 }
 
 const AddPage = () => {
@@ -33,6 +33,7 @@ const AddPage = () => {
     name: false,
     description: false,
     price: false,
+    supplier: false,
     images: false
   });
 
@@ -49,20 +50,21 @@ const AddPage = () => {
     formData.append("description", inputData.description)
     formData.append("price", inputData.price)
     formData.append("quantity", inputData.quantity)
-    formData.append("supplierName", inputData.supplier)
-
-    console.log(inputData)
+    formData.append("supplierName", inputData.supplierName)
 
     // 입력 필드의 유효성 검사
-    if (!inputData.name || !inputData.description || inputData.price === 0 || !images) {
-      setErrors({
-        name: !inputData.name,
-        description: !inputData.description,
-        price: inputData.price === 0,
-        images: images
-      });
+    const newErrors = {
+      name: !inputData.name,
+      description: !inputData.description,
+      price: inputData.price <= 0,
+      supplier: !inputData.supplierName,
+      images: images.length === 0
+    }
+
+    if(Object.values(newErrors).some(error => error)){
+      setErrors(newErrors)
       alert("Please fill out all required fields.")
-      return;
+      return
     }
 
     try {
@@ -75,7 +77,6 @@ const AddPage = () => {
 
   useEffect(() => {
     getNameList().then(data => {
-      console.log(data)
       setSupplier(data)
     })
   },[])
@@ -169,6 +170,32 @@ const AddPage = () => {
             />
           </FormGroup>
 
+          {supplier ? (
+            <FormGroup>
+            <Label for="supplier">
+              Select
+            </Label>
+            <Input
+              id="supplier"
+              name="supplier"
+              type="select"
+              onChange={handleChangeInput}
+              value={inputData.supplierName}
+              invalid={errors.supplier}
+            >
+              <option value="">Select</option>
+              {supplier.map((name) => (
+                <option key={name} value={name}>{name}</option>
+              ))}
+            </Input>
+            {errors.supplier && (
+              <FormFeedback>
+                Please select supplier
+              </FormFeedback>
+            )}
+          </FormGroup>
+          ) : null}
+
           <FormGroup>
             <Label for="ProductImage" className='font-weight-bold'>
               Product Image
@@ -191,26 +218,6 @@ const AddPage = () => {
               This is some placeholder block-level help text for the above input. It‘s a bit lighter and easily wraps to a new line.
             </FormText>
           </FormGroup>
-
-          {supplier ? (
-            <FormGroup>
-            <Label for="supplier">
-              Select
-            </Label>
-            <Input
-              id="supplier"
-              name="supplier"
-              type="select"
-              onChange={handleChangeInput}
-              value={inputData.supplier}
-            >
-              <option>Select</option>
-              {supplier.map((name) => (
-                <option key={name} value={name}>{name}</option>
-              ))}
-            </Input>
-          </FormGroup>
-          ) : null}
         
           <FormGroup className='d-flex justify-content-end'>
             <Button onClick={handleClickAdd} className='font-weight-bold'>
