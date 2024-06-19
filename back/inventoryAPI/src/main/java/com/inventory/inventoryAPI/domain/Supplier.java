@@ -27,4 +27,22 @@ public class Supplier {
     private String tel;
 
     private String email;
+
+    private boolean delFlag;
+
+    public void changeName(String name){
+        this.name = name;
+    }
+
+    public void changeTel(String tel){
+        this.tel = tel;
+    }
+
+    public void changeEmail(String email){
+        this.email = email;
+    }
+
+    public void changeDel(boolean del_flag){
+        this.delFlag = del_flag;
+    }
 }

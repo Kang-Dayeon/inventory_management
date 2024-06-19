@@ -36,4 +36,14 @@ public class SupplierController {
         return supplierService.getNameList();
     }
 
+    @PutMapping("/{supplierId}")
+    public void modify(SupplierDTO supplierDTO){
+        supplierService.modifySupplier(supplierDTO);
+    }
+
+    @DeleteMapping("/{supplierId}")
+    public void remove(Long supplierId){
+        supplierService.removeSupplier(supplierId);
+    }
+
 }

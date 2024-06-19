@@ -51,20 +51,11 @@ public class SupplierService {
                 pageRequestDTO.getSize(),
                 Sort.by("supplierId").descending());
 
-            Page<Supplier> result = supplierRepository.findAll(pageable);
+        Page<Supplier> result = supplierRepository.selectList(pageable);
 
-            List<SupplierDTO> dtoList = result.get().map(arr -> {
-                Supplier supplier = (Supplier) arr;
-
-                SupplierDTO supplierDTO = SupplierDTO.builder()
-                        .supplierId(supplier.getSupplierId())
-                        .name(supplier.getName())
-                        .tel(supplier.getTel())
-                        .email(supplier.getEmail())
-                        .build();
-
-                return supplierDTO;
-            }).collect(Collectors.toList());
+        List<SupplierDTO> dtoList = result.getContent().stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
 
             long totalCount = result.getTotalElements();
 
@@ -73,6 +64,22 @@ public class SupplierService {
                     .totalCount(totalCount)
                     .pageRequestDTO(pageRequestDTO)
                     .build();
+    }
+
+    public void modifySupplier(SupplierDTO supplierDTO){
+        Optional<Supplier> result = supplierRepository.findById(supplierDTO.getSupplierId());
+        Supplier supplier = result.orElseThrow();
+
+        supplier.changeName(supplierDTO.getName());
+        supplier.changeTel(supplierDTO.getTel());
+        supplier.changeEmail(supplierDTO.getEmail());
+    }
+
+    public void removeSupplier(Long supplierId){
+        Optional<Supplier> result = supplierRepository.findById(supplierId);
+        Supplier supplier = result.orElseThrow();
+
+        supplier.changeDel(true);
     }
 
     private SupplierDTO convertToDto(Supplier supplier){

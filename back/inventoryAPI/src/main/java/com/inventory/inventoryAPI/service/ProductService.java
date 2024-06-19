@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -30,6 +31,7 @@ public class ProductService {
     private final InventoryRepository inventoryRepository;
     private final SupplierRepository supplierRepository;
 
+    // get one
     public ProductDTO getOne(Long productId){
         List<Object[]> result = productRepository.getProductWithSupplier(productId);
 
@@ -39,13 +41,11 @@ public class ProductService {
 
         Product product = (Product) result.get(0)[0];
         Supplier supplier = (Supplier) result.get(0)[1];
-        List<ProductImageDTO> productImages = product.getImageList().stream()
-                .map(this::convertToProductImageDto)
-                .collect(Collectors.toList());
 
-        return convertToDto(product, supplier, productImages);
+        return entityToDto(product, supplier);
     }
 
+    // get list
     public PageResponseDTO<ProductDTO> getList(PageRequestDTO pageRequestDTO){
         Pageable pageable = PageRequest.of(pageRequestDTO.getPage() -1,
                 pageRequestDTO.getSize(),
@@ -77,11 +77,8 @@ public class ProductService {
                     .price(product.getPrice())
                     .createdAt(product.getCreatedAt())
                     .quantity(quantity)
-                    .supplier(supplierDTO)
+                    .supplierName(supplierDTO.getName())
                     .build();
-
-            String imageStr = productImage.getImageUrl();
-            productDTO.setImageList(List.of(imageStr));
 
             return productDTO;
         }).collect(Collectors.toList());
@@ -95,37 +92,37 @@ public class ProductService {
                 .build();
     }
 
-    public ProductDTO modifyProduct(Long productId,
-                                    String name,
-                                    String description,
-                                    int price,
-                                    List<MultipartFile> newImages,
-                                    List<String> uploadImageNames,
-                                    int quantity,
-                                    String supplierName) throws IOException {
-
+    // modify
+    @Transactional
+    public void modifyProduct(Long productId, ProductDTO productDTO) throws IOException {
         Optional<Product> result = productRepository.findById(productId);
-        Product product = result.orElseThrow();
+        Product product = result.orElseThrow(() -> new NoSuchElementException("Product not found with id: " + productId));
 
-        product.changeName(name);
-        product.changeDesc(description);
-        product.changePrice(price);
+        product.changeName(productDTO.getName());
+        product.changeDesc(productDTO.getDescription());
+        product.changePrice(productDTO.getPrice());
 
-        if(uploadImageNames != null && uploadImageNames.isEmpty()){
+        List<String> uploadFileNames = productDTO.getUploadFileName();
+
+        if(uploadFileNames != null && !uploadFileNames.isEmpty()){
             List<String> existingImageUrls = product.getImageList().stream()
                     .map(ProductImage::getImageUrl)
                     .collect(Collectors.toList());
 
             List<String> imagesToDelete = existingImageUrls.stream()
-                    .filter(imageUrl -> !uploadImageNames.contains(imageUrl))
+                    .filter(imageUrl -> !uploadFileNames.contains(imageUrl))
                     .collect(Collectors.toList());
 
             imagesToDelete.forEach(s3UploadService::deleteFile);
 
             // 기존 이미지 리스트를 clear하고 유지할 이미지들을 다시 추가
             product.clearList();
-            uploadImageNames.forEach(product::addImageString);
+            uploadFileNames.forEach(product::addImageString);
+        } else {
+            product.getImageList().forEach(image -> product.addImageString(image.getImageUrl()));
         }
+
+        List<MultipartFile> newImages = productDTO.getFiles();
 
         // 새로운 이미지가 있는 경우
         if (newImages != null && !newImages.isEmpty()) {
@@ -139,69 +136,31 @@ public class ProductService {
                     })
                     .collect(Collectors.toList());
 
-            // 새로운 이미지를 DTO로 변환
-            List<ProductImageDTO> newImageDtos = newImageUrls.stream()
-                    .map(url -> {
-                        product.addImageString(url);
-                        return ProductImageDTO.builder().imageUrl(url).build();
-                    })
-                    .collect(Collectors.toList());
-
-            // 기존 이미지를 유지할 필요가 없는 경우 리스트 초기화
-            if (uploadImageNames == null || uploadImageNames.isEmpty()) {
-                product.clearList();
-            }
-
-            // 기존 이미지를 유지할 경우 이미지 추가
-            if (uploadImageNames != null) {
-                uploadImageNames.forEach(product::addImageString);
-            }
+            newImageUrls.forEach(product::addImageString);
         }
 
-        if(supplierName != null){
-            Optional<Supplier> supplierResult = supplierRepository.findByName(supplierName);
-            Supplier supplier = supplierResult.orElseThrow();
+        // supplier
+        Optional<Supplier> supplierResult = supplierRepository.findByName(productDTO.getSupplierName());
+        Supplier supplier = supplierResult.orElseThrow();
+        product.changeSupplier(supplier);
 
-            product.changeSupplier(supplier);
-        }
-
+        // inventory
         List<Inventory> inventories = product.getInventories();
         if(!inventories.isEmpty()){
             Inventory inventory = inventories.get(0);
-            inventory.changeQuantity(quantity);
+            inventory.changeQuantity(productDTO.getQuantity());
             inventoryRepository.save(inventory);
         }
 
-        Product updatedProduct = productRepository.save(product);
-
-        if(newImageDtos == null){
-            newImageDtos = updatedProduct.getImageList().stream()
-                    .map(this::convertToProductImageDto)
-                    .collect(Collectors.toList());
-        }
-
-        return convertToDto(updatedProduct, updatedProduct.getSupplier(), newImageDtos);
+        productRepository.save(product);
     }
 
+    // create
     @Transactional
-    public ProductDTO createProduct(String name,
-                                    String description,
-                                    int price,
-                                    List<MultipartFile> images,
-                                    int quantity,
-                                    String supplierName) throws IOException {
+    public void createProduct(ProductDTO productDTO) throws IOException {
+        Product product = dtoToEntity(productDTO);
 
-        Optional<Supplier> result = supplierRepository.findByName(supplierName);
-        Supplier supplier = result.orElseThrow();
-
-        Product product = Product.builder()
-                .name(name)
-                .description(description)
-                .price(price)
-                .supplier(supplier)
-                .build();
-
-        List<String> imageUrls = images.stream()
+        List<String> imageUrls = productDTO.getFiles().stream()
                 .map(image -> {
                     try {
                         return s3UploadService.saveFile(image, "product-images");
@@ -217,22 +176,40 @@ public class ProductService {
 
         Inventory inventory = Inventory.builder()
                 .product(saveProduct)
-                .quantity(quantity)
+                .quantity(productDTO.getQuantity())
                 .build();
 
         saveProduct.getInventories().add(inventory);
 
         inventoryRepository.save(inventory);
-
-        List<ProductImageDTO> productImages = imageUrls.stream()
-                .map(url -> ProductImageDTO.builder().imageUrl(url).build())
-                .collect(Collectors.toList());
-
-        return convertToDto(saveProduct, supplier, productImages);
     }
 
+    // delete
+    @Transactional
+    public void removeProduct(Long productId){
+        Optional<Product> result = productRepository.findById(productId);
+        Product product = result.orElseThrow();
 
-    private ProductDTO convertToDto(Product product, Supplier supplier, List<ProductImageDTO> productImages){
+        product.changeDel(true);
+    }
+
+    private Product dtoToEntity(ProductDTO productDTO){
+        Optional<Supplier> result = supplierRepository.findByName(productDTO.getSupplierName());
+        Supplier supplier = result.orElseThrow();
+
+        Product product = Product.builder()
+                .productId(productDTO.getProductId())
+                .name(productDTO.getName())
+                .description(productDTO.getDescription())
+                .price(productDTO.getPrice())
+                .supplier(supplier)
+                .build();
+
+        return product;
+    }
+
+    // entity => dto
+    private ProductDTO entityToDto(Product product, Supplier supplier){
         Optional<Inventory> inventoryOptional = inventoryRepository.findByProduct(product);
         int quantity = inventoryOptional.map(Inventory::getQuantity).orElseThrow();
 
@@ -245,22 +222,26 @@ public class ProductService {
                         .build() :
                 null;
 
-        return ProductDTO.builder()
+        ProductDTO productDTO = ProductDTO.builder()
                 .productId(product.getProductId())
                 .name(product.getName())
                 .description(product.getDescription())
                 .price(product.getPrice())
-                .imageList(productImages.stream().map(ProductImageDTO::getImageUrl).collect(Collectors.toList()))
                 .createdAt(product.getCreatedAt())
                 .quantity(quantity)
-                .supplier(supplierDTO)
+                .supplierName(supplierDTO.getName())
                 .build();
-    }
 
-    private ProductImageDTO convertToProductImageDto(ProductImage productImage) {
-        return ProductImageDTO.builder()
-                .imageUrl(productImage.getImageUrl())
-                .ord(productImage.getOrd())
-                .build();
+        List<ProductImage> imageList = product.getImageList();
+
+        if(imageList == null || imageList.isEmpty()){
+            return productDTO;
+        }
+
+        List<String> fileUrlList = imageList.stream().map(productImage -> productImage.getImageUrl()).toList();
+
+        productDTO.setUploadFileName(fileUrlList);
+
+        return productDTO;
     }
 }

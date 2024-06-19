@@ -6,7 +6,6 @@ import com.inventory.inventoryAPI.dto.ProductDTO;
 import com.inventory.inventoryAPI.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -18,13 +17,8 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping("/add")
-    public ProductDTO createProduct(@RequestParam("name") String name,
-                                    @RequestParam("description") String description,
-                                    @RequestParam("price") int price,
-                                    @RequestPart("images")List<MultipartFile> images,
-                                    @RequestParam("quantity") int quantity,
-                                    @RequestParam("supplierName") String supplierName) throws IOException {
-        return productService.createProduct(name, description, price, images, quantity, supplierName);
+    public void createProduct(ProductDTO productDTO) throws IOException {
+        productService.createProduct(productDTO);
     }
 
     @GetMapping("/{productId}")
@@ -38,16 +32,13 @@ public class ProductController {
     }
 
     @PutMapping("/{productId}")
-    private ProductDTO modify(@PathVariable("productId") Long productId,
-                              @RequestParam("name") String name,
-                              @RequestParam("description") String description,
-                              @RequestParam("price") int price,
-                              @RequestPart("images")List<MultipartFile> images,
-                              @RequestParam("uploadImageNames") List<String> uploadImageNames,
-                              @RequestParam("quantity") int quantity,
-                              @RequestParam("supplierName") String supplierName) throws IOException {
+    public void modify(@PathVariable Long productId, ProductDTO productDTO) throws IOException {
+        productService.modifyProduct(productId, productDTO);
+    }
 
-        return productService.modifyProduct(productId,name,description,price,images,uploadImageNames,quantity,supplierName);
+    @DeleteMapping("/{productId}")
+    public void remove(@PathVariable("productId") Long productId){
+        productService.removeProduct(productId);
     }
 
 
