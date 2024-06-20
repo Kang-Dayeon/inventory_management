@@ -17,8 +17,8 @@ public class SupplierController {
     private final SupplierService supplierService;
 
     @PostMapping("/add")
-    public SupplierDTO createSupplier(@RequestParam("name") String name, @RequestParam("tel") String tel, @RequestParam("email") String email) throws IOException {
-        return supplierService.createSupplier(name, tel, email);
+    public SupplierDTO createSupplier(SupplierDTO supplierDTO) throws IOException {
+        return supplierService.createSupplier(supplierDTO);
     }
 
     @GetMapping("/{supplierId}")
@@ -42,7 +42,7 @@ public class SupplierController {
     }
 
     @DeleteMapping("/{supplierId}")
-    public void remove(Long supplierId){
+    public void remove(@PathVariable("supplierId") Long supplierId){
         supplierService.removeSupplier(supplierId);
     }
 

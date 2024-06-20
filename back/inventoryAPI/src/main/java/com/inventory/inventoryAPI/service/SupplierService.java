@@ -22,12 +22,8 @@ import java.util.stream.Collectors;
 public class SupplierService {
     private final SupplierRepository supplierRepository;
 
-    public SupplierDTO createSupplier(String name, String tel, String email) throws IOException {
-        Supplier supplier = Supplier.builder()
-                .name(name)
-                .tel(tel)
-                .email(email)
-                .build();
+    public SupplierDTO createSupplier(SupplierDTO supplierDTO) throws IOException {
+        Supplier supplier = dtoToEntity(supplierDTO);
 
         supplierRepository.save(supplier);
 
@@ -42,7 +38,7 @@ public class SupplierService {
     }
 
     public List<SupplierDTO> getAllList(){
-        List<Supplier> result = supplierRepository.findAll();
+        List<Supplier> result = supplierRepository.selectAllList();
         List<SupplierDTO> supplierList = result.stream().map(this::entityToDTO).collect(Collectors.toList());
         return supplierList;
     }
@@ -74,6 +70,8 @@ public class SupplierService {
         supplier.changeName(supplierDTO.getName());
         supplier.changeTel(supplierDTO.getTel());
         supplier.changeEmail(supplierDTO.getEmail());
+
+        supplierRepository.save(supplier);
     }
 
     public void removeSupplier(Long supplierId){
@@ -81,6 +79,8 @@ public class SupplierService {
         Supplier supplier = result.orElseThrow();
 
         supplier.changeDel(true);
+
+        supplierRepository.save(supplier);
     }
 
     private SupplierDTO entityToDTO(Supplier supplier){
@@ -89,6 +89,15 @@ public class SupplierService {
                 .name(supplier.getName())
                 .tel(supplier.getTel())
                 .email(supplier.getEmail())
+                .build();
+    }
+
+    private Supplier dtoToEntity(SupplierDTO supplierDTO){
+        return Supplier.builder()
+                .supplierId(supplierDTO.getSupplierId())
+                .name(supplierDTO.getName())
+                .email(supplierDTO.getEmail())
+                .tel(supplierDTO.getTel())
                 .build();
     }
 }
