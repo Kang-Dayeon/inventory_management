@@ -16,7 +16,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "left join p.imageList pi " +
             "left join p.inventories i " +
             "left join p.supplier s " +
-            "where pi.ord = 0 and p.delFlag = false")
+            "where pi.ord = 0 and p.delFlag = false and s.delFlag = false")
     Page<Object[]> selectList(Pageable pageable);
 
     @Query("SELECT p, s " +
