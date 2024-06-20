@@ -21,7 +21,7 @@ public class ProductDTO {
     private String description;
     private int price;
     private int quantity;
-    private String supplierName;
+    private Long supplierId;
     @Builder.Default
     private List<String> uploadFileName = new ArrayList<>();
     @Builder.Default

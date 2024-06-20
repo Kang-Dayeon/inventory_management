@@ -31,9 +31,9 @@ public class SupplierController {
         return supplierService.getList(pageRequestDTO);
     }
 
-    @GetMapping("/names")
-    public List<String> nameList(){
-        return supplierService.getNameList();
+    @GetMapping("/list")
+    public List<SupplierDTO> getAllList(){
+        return supplierService.getAllList();
     }
 
     @PutMapping("/{supplierId}")

@@ -18,9 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,6 +44,7 @@ public class ProductService {
     }
 
     // get list
+    @Transactional
     public PageResponseDTO<ProductDTO> getList(PageRequestDTO pageRequestDTO){
         Pageable pageable = PageRequest.of(pageRequestDTO.getPage() -1,
                 pageRequestDTO.getSize(),
@@ -58,7 +57,7 @@ public class ProductService {
 
             Product product = (Product) arr[0];
             ProductImage productImage = (ProductImage) arr[1];
-            int quantity = (int) arr[2];
+            Integer quantity = (Integer) arr[2];
             Supplier supplier = (Supplier) arr[3];
 
             SupplierDTO supplierDTO = supplier != null ?
@@ -77,8 +76,11 @@ public class ProductService {
                     .price(product.getPrice())
                     .createdAt(product.getCreatedAt())
                     .quantity(quantity)
-                    .supplierName(supplierDTO.getName())
+                    .supplierId(supplierDTO.getSupplierId())
                     .build();
+
+            String imageStr = productImage.getImageUrl();
+            productDTO.setUploadFileName(List.of(imageStr));
 
             return productDTO;
         }).collect(Collectors.toList());
@@ -93,7 +95,6 @@ public class ProductService {
     }
 
     // modify
-    @Transactional
     public void modifyProduct(Long productId, ProductDTO productDTO) throws IOException {
         Optional<Product> result = productRepository.findById(productId);
         Product product = result.orElseThrow(() -> new NoSuchElementException("Product not found with id: " + productId));
@@ -103,6 +104,8 @@ public class ProductService {
         product.changePrice(productDTO.getPrice());
 
         List<String> uploadFileNames = productDTO.getUploadFileName();
+
+        System.out.print(uploadFileNames);
 
         if(uploadFileNames != null && !uploadFileNames.isEmpty()){
             List<String> existingImageUrls = product.getImageList().stream()
@@ -117,9 +120,15 @@ public class ProductService {
 
             // 기존 이미지 리스트를 clear하고 유지할 이미지들을 다시 추가
             product.clearList();
-            uploadFileNames.forEach(product::addImageString);
+//            uploadFileNames.forEach(product::addImageString);
+            for (String imageUrl : uploadFileNames) {
+                product.addImageString(imageUrl);
+            }
         } else {
-            product.getImageList().forEach(image -> product.addImageString(image.getImageUrl()));
+//            product.getImageList().forEach(image -> product.addImageString(image.getImageUrl()));
+            for (ProductImage image : product.getImageList()) {
+                product.addImageString(image.getImageUrl());
+            }
         }
 
         List<MultipartFile> newImages = productDTO.getFiles();
@@ -136,11 +145,14 @@ public class ProductService {
                     })
                     .collect(Collectors.toList());
 
-            newImageUrls.forEach(product::addImageString);
+//            newImageUrls.forEach(product::addImageString);
+            for (String imageUrl : newImageUrls) {
+                product.addImageString(imageUrl);
+            }
         }
 
         // supplier
-        Optional<Supplier> supplierResult = supplierRepository.findByName(productDTO.getSupplierName());
+        Optional<Supplier> supplierResult = supplierRepository.findById(productDTO.getSupplierId());
         Supplier supplier = supplierResult.orElseThrow();
         product.changeSupplier(supplier);
 
@@ -194,7 +206,7 @@ public class ProductService {
     }
 
     private Product dtoToEntity(ProductDTO productDTO){
-        Optional<Supplier> result = supplierRepository.findByName(productDTO.getSupplierName());
+        Optional<Supplier> result = supplierRepository.findById(productDTO.getSupplierId());
         Supplier supplier = result.orElseThrow();
 
         Product product = Product.builder()
@@ -229,7 +241,7 @@ public class ProductService {
                 .price(product.getPrice())
                 .createdAt(product.getCreatedAt())
                 .quantity(quantity)
-                .supplierName(supplierDTO.getName())
+                .supplierId(supplierDTO.getSupplierId())
                 .build();
 
         List<ProductImage> imageList = product.getImageList();

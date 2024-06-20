@@ -31,19 +31,20 @@ public class SupplierService {
 
         supplierRepository.save(supplier);
 
-        return convertToDto(supplier);
+        return entityToDTO(supplier);
     }
 
     public SupplierDTO getOne(Long supplierId){
         Optional<Supplier> result = supplierRepository.findById(supplierId);
         Supplier supplier = result.orElseThrow();
 
-        return convertToDto(supplier);
+        return entityToDTO(supplier);
     }
 
-    public List<String> getNameList(){
-        List<Supplier> suppliers = supplierRepository.findAll();
-        return suppliers.stream().map(Supplier::getName).toList();
+    public List<SupplierDTO> getAllList(){
+        List<Supplier> result = supplierRepository.findAll();
+        List<SupplierDTO> supplierList = result.stream().map(this::entityToDTO).collect(Collectors.toList());
+        return supplierList;
     }
 
     public PageResponseDTO<SupplierDTO> getList(PageRequestDTO pageRequestDTO){
@@ -54,7 +55,7 @@ public class SupplierService {
         Page<Supplier> result = supplierRepository.selectList(pageable);
 
         List<SupplierDTO> dtoList = result.getContent().stream()
-                .map(this::convertToDto)
+                .map(this::entityToDTO)
                 .collect(Collectors.toList());
 
             long totalCount = result.getTotalElements();
@@ -82,8 +83,9 @@ public class SupplierService {
         supplier.changeDel(true);
     }
 
-    private SupplierDTO convertToDto(Supplier supplier){
+    private SupplierDTO entityToDTO(Supplier supplier){
         return SupplierDTO.builder()
+                .supplierId(supplier.getSupplierId())
                 .name(supplier.getName())
                 .tel(supplier.getTel())
                 .email(supplier.getEmail())

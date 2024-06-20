@@ -11,9 +11,6 @@ import java.util.Optional;
 
 @Repository
 public interface SupplierRepository extends JpaRepository<Supplier, Long> {
-    @Query("select s from Supplier s where s.delFlag = false and s.name = :name")
-    Optional<Supplier> findByName(String name);
-
     @Query("select s from Supplier s where s.delFlag = false")
     Page<Supplier> selectList(Pageable pageable);
 }
