@@ -95,6 +95,7 @@ public class ProductService {
     }
 
     // modify
+    @Transactional
     public void modifyProduct(Long productId, ProductDTO productDTO) throws IOException {
         Optional<Product> result = productRepository.findById(productId);
         Product product = result.orElseThrow(() -> new NoSuchElementException("Product not found with id: " + productId));
@@ -105,13 +106,11 @@ public class ProductService {
 
         List<String> uploadFileNames = productDTO.getUploadFileName();
 
-        System.out.print(uploadFileNames);
+        List<String> existingImageUrls = product.getImageList().stream()
+                .map(ProductImage::getImageUrl)
+                .collect(Collectors.toList());
 
         if(uploadFileNames != null && !uploadFileNames.isEmpty()){
-            List<String> existingImageUrls = product.getImageList().stream()
-                    .map(ProductImage::getImageUrl)
-                    .collect(Collectors.toList());
-
             List<String> imagesToDelete = existingImageUrls.stream()
                     .filter(imageUrl -> !uploadFileNames.contains(imageUrl))
                     .collect(Collectors.toList());
@@ -120,15 +119,12 @@ public class ProductService {
 
             // 기존 이미지 리스트를 clear하고 유지할 이미지들을 다시 추가
             product.clearList();
-//            uploadFileNames.forEach(product::addImageString);
             for (String imageUrl : uploadFileNames) {
                 product.addImageString(imageUrl);
             }
         } else {
-//            product.getImageList().forEach(image -> product.addImageString(image.getImageUrl()));
-            for (ProductImage image : product.getImageList()) {
-                product.addImageString(image.getImageUrl());
-            }
+            existingImageUrls.forEach(s3UploadService::deleteFile);
+            product.clearList();
         }
 
         List<MultipartFile> newImages = productDTO.getFiles();
@@ -203,6 +199,8 @@ public class ProductService {
         Product product = result.orElseThrow();
 
         product.changeDel(true);
+
+        productRepository.save(product);
     }
 
     private Product dtoToEntity(ProductDTO productDTO){
