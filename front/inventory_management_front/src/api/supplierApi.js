@@ -25,8 +25,20 @@ export const getAllList = async () => {
 
 export const postAdd = async (supplier) => {
   const header = {headers: {'Content-Type': 'multipart/form-data'}}
-
   const res = await axios.post(`${prefix}/add`, supplier, header)
+
+  return res.data
+}
+
+export const putOne = async (productId, supplier) => {
+  const header = {headers: {'Content-Type': 'multipart/form-data'}}
+  const res = await axios.put(`${prefix}/${productId}`, supplier, header)
+
+  return res.data
+}
+
+export const removeOne = async (supplierId) => {
+  const res = await axios.delete(`${prefix}/${supplierId}`)
 
   return res.data
 }
