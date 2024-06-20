@@ -126,6 +126,20 @@ a:focus {
   background-color: #5466b3;
 }
 
+.icon-btn{
+  width: 35px;
+  height: 35px;
+  background-color: transparent;
+  border: none;
+  border-radius: 50%;
+  transition: all 0.3s;
+}
+
+.icon-btn:hover{
+  background-color: #7386d5;
+  color: white;
+}
+
 @media only screen and (max-width: 500px) {
   body {
     overflow: hidden;
