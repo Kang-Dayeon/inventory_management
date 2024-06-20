@@ -67,7 +67,7 @@ const ModifyPage = () => {
     if (!inputData.name) newErrors.name = true
     if (!inputData.description) newErrors.description = true
     if (inputData.price === 0) newErrors.price = true
-    if (inputData.files === 0 && images.length === 0) newErrors.files = true
+    if (inputData.uploadFileName.length === 0 && images.length === 0) newErrors.files = true
     if (!inputData.supplierId) newErrors.supplierId = true
 
     if(Object.keys(newErrors).length > 0){
@@ -93,7 +93,6 @@ const ModifyPage = () => {
   useEffect(() => {
     getOne(productId).then(data => {
       setServerData(data)
-      console.log(serverData)
       resetInput(data)
     })
   }, [productId])
