@@ -11,14 +11,14 @@ export const getList = async (pageParam) => {
   return res.data
 }
 
-export const getOne = async (supplierId) => {
+export const getSupplierOne = async (supplierId) => {
   const res = await axios.get(`${prefix}/${supplierId}`)
 
   return res.data
 }
 
-export const getNameList = async () => {
-  const res = await axios.get(`${prefix}/names`)
+export const getAllList = async () => {
+  const res = await axios.get(`${prefix}/list`)
 
   return res.data
 }

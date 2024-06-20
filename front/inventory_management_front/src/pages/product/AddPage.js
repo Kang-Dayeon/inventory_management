@@ -2,7 +2,7 @@ import React, {useState, useEffect, useRef} from 'react';
 import useCustomMove from '../../hooks/useCustomMove';
 import useCustomInput from '../../hooks/useCustomInput';
 import { postAdd } from '../../api/productApi';
-import { getNameList } from '../../api/supplierApi';
+import { getAllList } from '../../api/supplierApi';
 import { 
   Form, 
   FormGroup, 
@@ -18,7 +18,7 @@ const initProduct = {
   description: '',
   price: 0,
   quantity: 0,
-  supplierName: ''
+  supplierId: null
 }
 
 const AddPage = () => {
@@ -33,8 +33,8 @@ const AddPage = () => {
     name: false,
     description: false,
     price: false,
-    supplier: false,
-    images: false
+    supplierId: false,
+    files: false
   });
 
   const handleClickAdd = async () => {
@@ -43,22 +43,24 @@ const AddPage = () => {
     const images = uploadRef.current.files
 
     for(let i = 0; i < images.length; i++){
-      formData.append("images", images[i])
+      formData.append("files", images[i])
     }
 
     formData.append("name", inputData.name)
     formData.append("description", inputData.description)
     formData.append("price", inputData.price)
     formData.append("quantity", inputData.quantity)
-    formData.append("supplierName", inputData.supplierName)
+    formData.append("supplierId", inputData.supplierId)
+
+    console.log(inputData)
 
     // 입력 필드의 유효성 검사
     const newErrors = {
       name: !inputData.name,
       description: !inputData.description,
       price: inputData.price <= 0,
-      supplier: !inputData.supplierName,
-      images: images.length === 0
+      supplierId: !inputData.supplierId,
+      files: images.length === 0
     }
 
     if(Object.values(newErrors).some(error => error)){
@@ -76,8 +78,9 @@ const AddPage = () => {
   }
 
   useEffect(() => {
-    getNameList().then(data => {
+    getAllList().then(data => {
       setSupplier(data)
+      console.log(data)
     })
   },[])
 
@@ -177,18 +180,18 @@ const AddPage = () => {
             </Label>
             <Input
               id="supplier"
-              name="supplier"
+              name="supplierId"
               type="select"
               onChange={handleChangeInput}
-              value={inputData.supplierName}
-              invalid={errors.supplier}
+              defaultValue={inputData.supplierId}
+              invalid={errors.supplierId}
             >
               <option value="">Select</option>
-              {supplier.map((name) => (
-                <option key={name} value={name}>{name}</option>
+              {supplier.map((supplier) => (
+                <option key={supplier.supplierId} value={supplier.supplierId}>{supplier.name}</option>
               ))}
             </Input>
-            {errors.supplier && (
+            {errors.supplierId && (
               <FormFeedback>
                 Please select supplier
               </FormFeedback>
@@ -204,12 +207,12 @@ const AddPage = () => {
               innerRef={uploadRef}
               multiple={true}
               id="ProductImage"
-              name="ProductImage"
+              name="files"
               type="file"
               accept='image/*'
-              invalid={errors.images}
+              invalid={errors.files}
             />
-            {errors.images && (
+            {errors.files && (
               <FormFeedback>
                 Please add product image
               </FormFeedback>

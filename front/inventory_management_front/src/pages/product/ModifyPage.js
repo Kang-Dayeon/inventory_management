@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import useCustomMove from '../../hooks/useCustomMove';
 import useCustomInput from '../../hooks/useCustomInput';
 import { putOne, getOne } from '../../api/productApi';
-import { getNameList } from '../../api/supplierApi';
+import { getAllList } from '../../api/supplierApi';
 import { 
   Form, 
   FormGroup, 
@@ -20,9 +20,10 @@ const initState = {
   name: '',
   description: '',
   price: 0,
-  imageList: [],
+  files: [],
+  uploadFileName: [],
   quantity: 0,
-  supplierName: '',
+  supplierId: null,
   createAt: ''
 }
 
@@ -38,8 +39,8 @@ const ModifyPage = () => {
   const [errors, setErrors] = useState({});
 
   const deleteOldImage = (imageName) => {
-    const resultImageNames = serverData.imageList.filter((image) => image !== imageName)
-    serverData.imageList = resultImageNames
+    const resultImageNames = serverData.uploadFileName.filter((image) => image !== imageName)
+    serverData.uploadFileName = resultImageNames
     setServerData({...serverData})
   }
 
@@ -48,26 +49,26 @@ const ModifyPage = () => {
     const images = uploadRef.current.files
 
     for(let i = 0; i < images.length; i++){
-      formData.append("newImages", images[i])
+      formData.append("files", images[i])
     }
 
-    for(let i = 0; i < serverData.imageList.length; i++){
-      formData.append("uploadImageNames", serverData.imageList[i])
+    for(let i = 0; i < serverData.uploadFileName.length; i++){
+      formData.append("uploadFileName", serverData.uploadFileName[i])
     }
     
     formData.append("name", inputData.name)
     formData.append("description", inputData.description)
     formData.append("price", inputData.price)
     formData.append("quantity", inputData.quantity)
-    formData.append("supplierName", inputData.supplierName)
+    formData.append("supplierId", inputData.supplierId)
 
     // 입력 필드의 유효성 검사
     const newErrors = {}
     if (!inputData.name) newErrors.name = true
     if (!inputData.description) newErrors.description = true
     if (inputData.price === 0) newErrors.price = true
-    if (inputData.imageList.length === 0 && images.length === 0) newErrors.images = true
-    if (!inputData.supplierName) newErrors.supplier = true
+    if (inputData.files === 0 && images.length === 0) newErrors.files = true
+    if (!inputData.supplierId) newErrors.supplierId = true
 
     if(Object.keys(newErrors).length > 0){
       setErrors(newErrors);
@@ -84,7 +85,7 @@ const ModifyPage = () => {
   }
 
   useEffect(() => {
-    getNameList().then(data => {
+    getAllList().then(data => {
       setSupplier(data)
     })
   },[])
@@ -193,18 +194,18 @@ const ModifyPage = () => {
             </Label>
             <Input
               id="supplier"
-              name="supplier"
+              name="supplierId"
               type="select"
-              value={inputData.supplierName}
+              defaultValue={inputData.supplierId}
               onChange={handleChangeInput}
-              invalid={!!errors.supplier}
+              invalid={!!errors.supplierId}
             >
               <option value="">Select</option>
-              {supplier.map((name) => (
-                <option key={name} value={name}>{name}</option>
+              {supplier.map((supplier) => (
+                <option key={supplier.supplierId} value={supplier.supplierId}>{supplier.name}</option>
               ))}
             </Input>
-            {errors.supplier && (
+            {errors.supplierId && (
               <FormFeedback>
                 Please select supplier
               </FormFeedback>
@@ -217,7 +218,7 @@ const ModifyPage = () => {
               Product Image
             </Label>
             <div className="d-flex">
-            {serverData.imageList.map(image => (
+            {serverData.uploadFileName.map(image => (
               <Card
                 style={{
                   width: '18rem'
@@ -239,12 +240,12 @@ const ModifyPage = () => {
               innerRef={uploadRef}
               multiple={true}
               id="ProductImage"
-              name="ProductImage"
+              name="files"
               type="file"
               accept='image/*'
-              invalid={!!errors.images}
+              invalid={!!errors.files}
             />
-            {errors.images && (
+            {errors.files && (
               <FormFeedback>
                 Please add product image
               </FormFeedback>

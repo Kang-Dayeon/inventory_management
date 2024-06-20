@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import useCustomMove from '../../hooks/useCustomMove';
 import { getOne, removeOne } from '../../api/productApi';
+import { getSupplierOne } from '../../api/supplierApi';
 import { 
   Card, 
   CardBody, 
@@ -16,16 +17,23 @@ const initState = {
   name: '',
   description: '',
   price: 0,
-  imageList: [],
+  uploadFileName: [],
   quantity: 0,
-  supplierName: '',
+  supplierId: null,
   createAt: ''
+}
+
+const initSupplier = {
+  name: '',
+  tel: '',
+  email: ''
 }
 
 const DetailPage = () => {
   const {productId} = useParams()
   const {page, size, refresh, moveToModify, moveToList} = useCustomMove()
   const [serverData, setServerData] = useState(initState)
+  const [supplier, setSupplier] = useState(initSupplier)
 
   const handleClickRemove = async () => {
     try {
@@ -43,6 +51,15 @@ const DetailPage = () => {
       console.log(data)
     })
   }, [page, size, refresh])
+
+  useEffect(() => {
+    if(serverData.supplierId){
+      getSupplierOne(serverData.supplierId).then(data => {
+        console.log(data)
+        setSupplier(data)
+      })
+    }
+  }, [])
 
   return (
     <div>
@@ -65,7 +82,7 @@ const DetailPage = () => {
               在庫：{serverData.quantity}
             </ListGroupItem>
             <ListGroupItem>
-              取引先：{serverData.supplierName}
+              取引先：{supplier.name}
             </ListGroupItem>
             <ListGroupItem>
               商品の説明：{serverData.description}
@@ -77,7 +94,7 @@ const DetailPage = () => {
         </CardBody>
         
         <CardBody>
-          {serverData.imageList.map((image) => (
+          {serverData.uploadFileName?.map((image) => (
             <img style={{width: '40%'}} src={image} />
           ))}
         </CardBody>
