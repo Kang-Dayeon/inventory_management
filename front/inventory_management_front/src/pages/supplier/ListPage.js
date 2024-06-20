@@ -1,12 +1,18 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getList } from '../../api/supplierApi';
+import { getList, removeOne } from '../../api/supplierApi';
 import useCustomMove from '../../hooks/useCustomMove';
 import PaginationComponent from '../../components/common/PaginationComponent';
 import { 
   Table, 
   Button
 } from "reactstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faPenToSquare,
+  faTrashCan,
+  faFolderOpen
+} from "@fortawesome/free-solid-svg-icons";
 
 const initState = {
   dtoList: [],
@@ -30,6 +36,14 @@ const ListPage = () => {
     navigate("/supplier/add")
   }, [])
 
+  const handleClickDelete = (supplierId) => {
+    const confirm = window.confirm("本当に削除しますか？ \n❗️削除されると、その取引先に関連する商品も削除されます❗️")
+    if(confirm){
+      removeOne(supplierId)
+      moveToList()
+    }
+  }
+
   useEffect(() => {
     getList({page, size}).then(data => {
       setServerData(data)
@@ -50,8 +64,6 @@ const ListPage = () => {
           <thead>
             <tr>
               <th>
-              </th>
-              <th>
                 Name
               </th>
               <th>
@@ -60,14 +72,18 @@ const ListPage = () => {
               <th>
                 Email
               </th>
+              <th className='text-center'>
+                modify
+              </th>
+              <th className='text-center'>
+                delete
+              </th>
             </tr>
           </thead>
           <tbody>
-            {serverData.dtoList.map((supplier) => 
+            {serverData.dtoList > 0 ? (
+              serverData.dtoList.map((supplier) => 
                 <tr>
-                <th scope="row">
-                  {supplier.supplierId}
-                </th>
                 <td>
                   {supplier.name}
                 </td>
@@ -77,8 +93,26 @@ const ListPage = () => {
                 <td>
                   {supplier.email}
                 </td>
+                <td className='text-center'>
+                  <button className='icon-btn' onClick={() => moveToRead(supplier.supplierId)}>
+                    <FontAwesomeIcon icon={faPenToSquare} />
+                  </button>
+                </td>
+                <td className='text-center'>
+                  <button className='icon-btn' onClick={() => handleClickDelete(supplier.supplierId)}>
+                    <FontAwesomeIcon icon={faTrashCan} />
+                  </button>
+                </td>
                 </tr>
-              )}
+              )
+            ):(
+              <tr>
+                <td colSpan='5' className='text-center'>
+                  No DataData... <FontAwesomeIcon icon={faFolderOpen} />
+                </td>
+              </tr>
+            )}
+            
           </tbody>
         </Table>
 

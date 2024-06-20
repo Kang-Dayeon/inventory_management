@@ -6,9 +6,12 @@ import {
   Card, 
   CardBody, 
   CardHeader,
+  ListGroupItemHeading,
   CardTitle,
+  List,
   ListGroup,
   ListGroupItem,
+  ListGroupItemText,
   Button 
 }from 'reactstrap';
 import { useParams } from 'react-router-dom';
@@ -59,7 +62,7 @@ const DetailPage = () => {
         setSupplier(data)
       })
     }
-  }, [])
+  }, [serverData])
 
   return (
     <div>
@@ -76,19 +79,49 @@ const DetailPage = () => {
         <CardBody>
           <ListGroup flush>
             <ListGroupItem>
-              価額：{serverData.price}円
+              <ListGroupItemHeading className='font-weight-bold'>
+                価額
+              </ListGroupItemHeading>
+              <ListGroupItemText>
+                {serverData.price}円
+              </ListGroupItemText>
             </ListGroupItem>
             <ListGroupItem>
-              在庫：{serverData.quantity}
+              <ListGroupItemHeading className='font-weight-bold'>
+                在庫
+              </ListGroupItemHeading>
+              <ListGroupItemText>
+                {serverData.quantity}
+              </ListGroupItemText>
             </ListGroupItem>
             <ListGroupItem>
-              取引先：{supplier.name}
+              <ListGroupItemHeading className='font-weight-bold'>
+                商品の説明
+              </ListGroupItemHeading>
+              <ListGroupItemText>
+                {serverData.description}
+              </ListGroupItemText>
             </ListGroupItem>
             <ListGroupItem>
-              商品の説明：{serverData.description}
+            <ListGroupItemHeading className='font-weight-bold'>
+              取引先
+            </ListGroupItemHeading>
+              <List>
+                <li>
+                  会社名　：{supplier.name}
+                </li>
+                <li>
+                  連絡先　：{supplier.tel}
+                </li>
+                <li>
+                  メール　：{supplier.email}
+                </li>
+              </List>
             </ListGroupItem>
             <ListGroupItem>
-              商品のイメジ
+              <ListGroupItemHeading className='font-weight-bold'>
+                商品のイメジ
+              </ListGroupItemHeading>
             </ListGroupItem>
           </ListGroup>
         </CardBody>

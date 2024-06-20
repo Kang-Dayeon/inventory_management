@@ -1,13 +1,17 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import moment from 'moment';
 import { getList } from '../../api/productApi';
 import useCustomMove from '../../hooks/useCustomMove';
 import PaginationComponent from '../../components/common/PaginationComponent';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faFolderOpen
+} from "@fortawesome/free-solid-svg-icons";
 import { 
   Table, 
   Button
 } from "reactstrap";
-import { useNavigate } from 'react-router-dom';
 
 const initState = {
   dtoList: [],
@@ -35,7 +39,6 @@ const ListPage = () => {
   useEffect(() => {
     getList({page, size}).then(data => {
       setServerData(data)
-      console.log(data)
     })
   }, [page, size, refresh])
 
@@ -52,8 +55,6 @@ const ListPage = () => {
         <thead>
           <tr>
             <th>
-            </th>
-            <th>
               Name
             </th>
             <th>
@@ -66,19 +67,14 @@ const ListPage = () => {
               Quantity
             </th>
             <th>
-              Supplier
-            </th>
-            <th>
               Create Date
             </th>
           </tr>
         </thead>
         <tbody>
-          {serverData.dtoList.map((product) => 
+          {serverData.dtoList.length > 0 ? (
+            serverData.dtoList.map((product) => 
               <tr onClick={() => moveToRead(product.productId)}>
-              <th scope="row">
-                {product.productId}
-              </th>
               <td>
                 {product.name}
               </td>
@@ -92,13 +88,18 @@ const ListPage = () => {
                 {product.quantity}
               </td>
               <td>
-                {product.supplierName}
-              </td>
-              <td>
                 {moment(product.createdAt).format('YYYY.MM.DD')}
               </td>
               </tr>
-            )}
+            )
+          ) : (
+            <tr>
+              <td colSpan='5' className='text-center'>
+                No DataData... <FontAwesomeIcon icon={faFolderOpen} />
+              </td>
+            </tr>
+          )}
+          
         </tbody>
       </Table>
 
