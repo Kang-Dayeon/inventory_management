@@ -3,10 +3,12 @@ import { createBrowserRouter } from 'react-router-dom';
 import { Spinner } from "reactstrap";
 import productRouter from './productRouter';
 import supplierRouter from './supplierRouter';
+import transactionRouer from './transactionRouer';
 
 const Loading = <div className='container-fluid d-flex justify-content-center'><Spinner>Loading...</Spinner></div>
 const Product = lazy(() => import("../pages/product/IndexPage"))
 const Supplier = lazy(() => import("../pages/supplier/IndexPage"))
+const Transaction = lazy(() => import("../pages/transaction/IndexPage"))
 const DashboardPage = lazy(() => import("../pages/DashboardPage"))
 
 const root = createBrowserRouter ([
@@ -23,6 +25,11 @@ const root = createBrowserRouter ([
     path: "supplier",
     element: <Suspense fallback={Loading}><Supplier /></Suspense>,
     children: supplierRouter()
+  },
+  {
+    path: "transaction",
+    element: <Suspense fallback={Loading}><Transaction /></Suspense>,
+    children: transactionRouer()
   }
 ]);
 
