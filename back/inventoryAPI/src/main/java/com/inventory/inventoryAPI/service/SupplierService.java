@@ -54,13 +54,13 @@ public class SupplierService {
                 .map(this::entityToDTO)
                 .collect(Collectors.toList());
 
-            long totalCount = result.getTotalElements();
+        long totalCount = result.getTotalElements();
 
-            return PageResponseDTO.<SupplierDTO>withAll()
-                    .dtoList(dtoList)
-                    .totalCount(totalCount)
-                    .pageRequestDTO(pageRequestDTO)
-                    .build();
+        return PageResponseDTO.<SupplierDTO>withAll()
+                .dtoList(dtoList)
+                .totalCount(totalCount)
+                .pageRequestDTO(pageRequestDTO)
+                .build();
     }
 
     public void modifySupplier(SupplierDTO supplierDTO){

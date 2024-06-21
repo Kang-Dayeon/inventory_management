@@ -10,6 +10,7 @@ import com.inventory.inventoryAPI.repository.ProductRepository;
 import com.inventory.inventoryAPI.repository.SupplierRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class ProductService {
@@ -166,6 +168,7 @@ public class ProductService {
     // create
     @Transactional
     public void createProduct(ProductDTO productDTO) throws IOException {
+        log.info("*******************" + productDTO);
         Product product = dtoToEntity(productDTO);
 
         List<String> imageUrls = productDTO.getFiles().stream()
