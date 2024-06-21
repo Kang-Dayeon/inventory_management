@@ -27,7 +27,7 @@ public class Transaction {
     private Integer quantity;
 
     @Column(nullable = false)
-    private Double totalPrice;
+    private Integer totalPrice;
 
     @Column(nullable = false, updatable = false)
     @Builder.Default
