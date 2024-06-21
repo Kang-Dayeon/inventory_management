@@ -12,7 +12,9 @@ const useCustomInput = (defalutValue) => {
       ...prevData,
       [name]: value
     }))
+    console.log(inputData)
   }
+
 
   const resetInput = (defalutValue) => {
     setInputData(defalutValue)

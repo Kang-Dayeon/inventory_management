@@ -1,4 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react';
+import { NumericFormat } from 'react-number-format';
 import useCustomMove from '../../hooks/useCustomMove';
 import useCustomInput from '../../hooks/useCustomInput';
 import { postAdd } from '../../api/productApi';
@@ -36,6 +37,16 @@ const AddPage = () => {
     supplierId: false,
     files: false
   });
+
+  const handlePriceChange = (values) => {
+    const { value } = values;
+    handleChangeInput({
+      target: {
+        name: 'price',
+        value: value // 이 부분이 변경되어야 한다.
+      }
+    });
+  }
 
   const handleClickAdd = async () => {
     const formData = new FormData()
@@ -95,6 +106,10 @@ const AddPage = () => {
     }
   }, [productResult, moveToList]);
 
+  useEffect(() => {
+    console.log(inputData)
+  }, [inputData])
+
   return (
     <div className='mb-5'>
       <h3 className='font-weight-bold'>Product ADD</h3>
@@ -143,14 +158,15 @@ const AddPage = () => {
             <Label for="price" className='font-weight-bold'>
               Product Price
             </Label>
-            <Input
+            <NumericFormat
               id="price"
               name="price"
               placeholder="ProductPrice"
-              type="number"
               value={inputData.price}
-              onChange={handleChangeInput}
+              onValueChange={handlePriceChange}
               invalid={errors.price}
+              thousandSeparator={true}
+              className={`form-control ${errors.price ? 'is-invalid' : ''}`}
             />
             {errors.price && (
               <FormFeedback>

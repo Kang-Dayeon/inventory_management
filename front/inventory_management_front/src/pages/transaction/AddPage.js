@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import useCustomMove from '../../hooks/useCustomMove';
 import { getOne } from '../../api/productApi';
 import { postAdd } from '../../api/transactionApi';

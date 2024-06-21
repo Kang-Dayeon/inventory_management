@@ -33,7 +33,7 @@ const SideBar = ({ isOpen, toggleSidebar }) => (
           </NavLink>
         </NavItem>
         <NavItem>
-          <NavLink tag={Link} to={"/pages"}>
+          <NavLink tag={Link} to={"/transaction"}>
             <FontAwesomeIcon icon={faCommentsDollar} className="mr-2" />
             Transactions
           </NavLink>

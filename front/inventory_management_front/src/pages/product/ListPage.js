@@ -6,7 +6,8 @@ import useCustomMove from '../../hooks/useCustomMove';
 import PaginationComponent from '../../components/common/PaginationComponent';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faFolderOpen
+  faFolderOpen,
+  faCommentsDollar
 } from "@fortawesome/free-solid-svg-icons";
 import { 
   Table, 
@@ -36,6 +37,10 @@ const ListPage = () => {
     navigate("/product/add")
   }, [])
 
+  const handleClickTransaction = (productId) => {
+    navigate(`/transaction/add/${productId}`, { replace: true })
+  }
+
   useEffect(() => {
     getList({page, size}).then(data => {
       setServerData(data)
@@ -51,23 +56,26 @@ const ListPage = () => {
         </Button>
       </div>
       {/* table */}
-      <Table className='mt-3'>
+      <Table className='list-table mt-3' hover>
         <thead>
           <tr>
-            <th>
+            <th className='text-center'>
               Name
             </th>
-            <th>
+            <th className='text-center'>
               Description
             </th>
-            <th>
+            <th className='text-center'>
               Price
             </th>
-            <th>
+            <th className='text-center'>
               Quantity
             </th>
-            <th>
+            <th className='text-center'>
               Create Date
+            </th>
+            <th style={{width: '200px'}} className='text-center'>
+              Add Transaction
             </th>
           </tr>
         </thead>
@@ -75,26 +83,31 @@ const ListPage = () => {
           {serverData.dtoList.length > 0 ? (
             serverData.dtoList.map((product) => 
               <tr onClick={() => moveToRead(product.productId)}>
-              <td>
+              <td className='text-center'>
                 {product.name}
               </td>
-              <td>
+              <td className='text-center'>
                 {product.description}
               </td>
-              <td>
-                {product.price}
+              <td className='text-end'>
+                {product.price.toLocaleString()}円
               </td>
-              <td>
-                {product.quantity}
+              <td className='text-end'>
+                {product.quantity} 個
               </td>
-              <td>
+              <td className='text-center'>
                 {moment(product.createdAt).format('YYYY.MM.DD')}
+              </td>
+              <td scope="row" className='text-center'>
+                <button className='icon-btn' onClick={(e) => {e.stopPropagation(); handleClickTransaction(product.productId);}}>
+                  <FontAwesomeIcon icon={faCommentsDollar} />
+                </button>
               </td>
               </tr>
             )
           ) : (
             <tr>
-              <td colSpan='5' className='text-center'>
+              <td colSpan='6' className='text-center'>
                 No DataData... <FontAwesomeIcon icon={faFolderOpen} />
               </td>
             </tr>

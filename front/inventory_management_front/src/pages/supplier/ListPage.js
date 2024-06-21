@@ -46,6 +46,7 @@ const ListPage = () => {
 
   useEffect(() => {
     getList({page, size}).then(data => {
+      console.log(data)
       setServerData(data)
     })
   }, [page, size, refresh])
@@ -60,16 +61,16 @@ const ListPage = () => {
       </div>
         
         {/* table */}
-        <Table className='mt-3'>
+        <Table className='mt-3' hover>
           <thead>
             <tr>
-              <th>
+              <th className='text-center'>
                 Name
               </th>
-              <th>
+              <th className='text-center'>
                 Tel
               </th>
-              <th>
+              <th className='text-center'>
                 Email
               </th>
               <th className='text-center'>
@@ -81,16 +82,16 @@ const ListPage = () => {
             </tr>
           </thead>
           <tbody>
-            {serverData.dtoList > 0 ? (
+            {serverData.dtoList.length > 0 ? (
               serverData.dtoList.map((supplier) => 
                 <tr>
-                <td>
+                <td className='text-center'>
                   {supplier.name}
                 </td>
-                <td>
+                <td className='text-center'>
                   {supplier.tel}
                 </td>
-                <td>
+                <td className='text-center'>
                   {supplier.email}
                 </td>
                 <td className='text-center'>
@@ -116,7 +117,7 @@ const ListPage = () => {
           </tbody>
         </Table>
 
-        <PaginationComponent serverData={serverData} moveToPage={moveToList} pageName={"product"} />
+        <PaginationComponent serverData={serverData} moveToPage={moveToList} pageName={"supplier"} />
       </div>
   );
 };
