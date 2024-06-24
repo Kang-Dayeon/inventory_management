@@ -1,12 +1,15 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useEffect} from 'react';
 import moment from 'moment';
-import { useNavigate } from 'react-router-dom';
-import { getList } from '../../api/transactionApi';
+import { getList, removeOne, getSearchList } from '../../api/transactionApi';
 import useCustomMove from '../../hooks/useCustomMove';
 import PaginationComponent from '../../components/common/PaginationComponent';
 import { 
   Table, 
-  Button
+  Button,
+  Form,
+  Row,
+  Col,
+  Input
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -14,6 +17,7 @@ import {
   faTrashCan,
   faFolderOpen
 } from "@fortawesome/free-solid-svg-icons";
+import { getAllList } from '../../api/productApi';
 
 const initState = {
   dtoList: [],
@@ -29,36 +33,100 @@ const initState = {
 }
 
 const ListPage = () => {
-  const navigate = useNavigate()
-  const {page, size, refresh, moveToList, moveToRead} = useCustomMove()
+  const {page, size, refresh, moveToList, moveToModify} = useCustomMove()
   const [serverData, setServerData] = useState(initState)
 
-  const handleClickAdd = useCallback(() => {
-    navigate("/transaction/add")
-  }, [])
+  const [product, setProduct] = useState([])
 
-  // const handleClickDelete = (supplierId) => {
-  //   const confirm = window.confirm("本当に削除しますか？ \n❗️削除されると、その取引先に関連する商品も削除されます❗️")
-  //   if(confirm){
-  //     removeOne(supplierId)
-  //     moveToList()
-  //   }
-  // }
+  const [filter, setFilter] = useState({productId: '', dateRange: '', })
+
+  const handleClickDelete = (transactionId) => {
+    const confirm = window.confirm("本当に削除しますか？ \n 取引履歴を削除しても商品の在庫は変わりません❗️")
+    if(confirm){
+      removeOne(transactionId)
+      moveToList()
+    }
+  }
+
+  const handleFilterChange = (e) => {
+    const {name, value} = e.target
+    setFilter({
+      ...filter,
+      [name] : value
+    })
+  }
+
+  const handleClickSearch = () => {
+    getSearchList({page, size, ...filter}).then(data => {
+      setServerData(data)
+    })
+  }
 
   useEffect(() => {
     getList({page, size}).then(data => {
-      console.log(data)
       setServerData(data)
+    })
+    getAllList().then(data => {
+      setProduct(data)
     })
   }, [page, size, refresh])
 
   return (
     <div>
       <div className='d-flex justify-content-between'>
-        <h3 className='font-weight-bold'>Transaction List</h3>
-        <Button className='font-weight-bold' onClick={handleClickAdd}>
-          ADD Transaction
-        </Button>
+        <h3 className='font-weight-bold'>取引リスト</h3>
+        <div>
+          <Form className='d-flex'>
+            <Row className="row-cols-lg-auto g-3 align-items-center">
+              <Col>
+                <Input
+                    name="productId"
+                    type="select"
+                    value={filter.productId}
+                    onChange={handleFilterChange}
+                  >
+                    <option　value="">
+                      商品
+                    </option>
+                    {product.length > 0 ? (
+                      product.map(product => (
+                        <option key={product.productId} value={product.productId}>{product.name}</option>
+                      ))
+                    ):(
+                      <></>
+                    )}
+                </Input>
+              </Col>
+              <Col>
+                <Input
+                    name="dateRange"
+                    type="select"
+                    value={filter.dateRange}
+                    onChange={handleFilterChange}
+                  >
+                    <option value="all">
+                      期間
+                    </option>
+                    <option　value={"week"}>
+                      1週
+                    </option>
+                    <option value={"month"}>
+                      1ヶ月
+                    </option>
+                    <option value={"year"}>
+                      １年
+                    </option>
+                </Input>
+              </Col>
+                <Button className='ml-2' onClick={handleClickSearch}>
+                  検索
+                </Button>
+              <Col>
+              </Col>
+            </Row>
+          </Form>
+        </div>
+        
       </div>
         
         {/* table */}
@@ -66,23 +134,23 @@ const ListPage = () => {
           <thead>
             <tr>
               <th className='text-center'>
-                Product Name
+                商品名
               </th>
               <th className='text-center'>
-                Total Price
+                取引金額
               </th>
               <th className='text-center'>
-                Transaction Quantity
+                取引数量
               </th>
               <th className='text-center'>
-                Transaction Date
-              </th>
-              {/* <th className='text-center'>
-                modify
+                取引日
               </th>
               <th className='text-center'>
-                delete
-              </th> */}
+                修正
+              </th>
+              <th className='text-center'>
+                削除
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -101,16 +169,16 @@ const ListPage = () => {
                 <td className='text-center'>
                   {moment(transaction.createdAt).format('YYYY.MM.DD')}
                 </td>
-                {/* <td className='text-center'>
-                  <button className='icon-btn' onClick={() => moveToRead(supplier.supplierId)}>
+                <td className='text-center'>
+                  <button className='icon-btn' onClick={() => moveToModify(transaction.transactionId)}>
                     <FontAwesomeIcon icon={faPenToSquare} />
                   </button>
-                </td> */}
-                {/* <td className='text-center'>
-                  <button className='icon-btn' onClick={() => handleClickDelete(supplier.supplierId)}>
+                </td> 
+                <td className='text-center'>
+                  <button className='icon-btn' onClick={() => handleClickDelete(transaction.transactionId)}>
                     <FontAwesomeIcon icon={faTrashCan} />
                   </button>
-                </td> */}
+                </td>
                 </tr>
               )
             ):(

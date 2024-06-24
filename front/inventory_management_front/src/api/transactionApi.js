@@ -17,3 +17,29 @@ export const getList = async (pageParam) => {
 
   return res.data
 }
+
+export const getOneTransaction = async (transactionId) => {
+  const res = await axios.get(`${prefix}/${transactionId}`)
+
+  return res.data
+}
+
+export const putOne = async (transactionId, transaction) => {
+  const header = {headers: {'Content-Type': 'multipart/form-data'}}
+  const res = await axios.put(`${prefix}/${transactionId}`, transaction, header)
+
+  return res.data
+}
+
+export const removeOne = async (transactionId) => {
+  const res = await axios.delete(`${prefix}/${transactionId}`)
+
+  return res.data
+}
+
+export const getSearchList = async (pageParam) => {
+  const {page, size, productId, dateRange} = pageParam
+  const res = await axios.get(`${prefix}/search`, {params:{page, size, productId, dateRange}})
+
+  return res.data
+}
