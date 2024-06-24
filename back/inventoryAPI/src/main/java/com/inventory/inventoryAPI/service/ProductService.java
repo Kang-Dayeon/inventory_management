@@ -96,6 +96,12 @@ public class ProductService {
                 .build();
     }
 
+    public List<ProductDTO> getAllList(){
+        List<Product> result = productRepository.selectAllList();
+
+        return result.stream().map(this::entityToDtoOnlyProduct).collect(Collectors.toList());
+    }
+
     // modify
     @Transactional
     public void modifyProduct(Long productId, ProductDTO productDTO) throws IOException {
@@ -168,7 +174,6 @@ public class ProductService {
     // create
     @Transactional
     public void createProduct(ProductDTO productDTO) throws IOException {
-        log.info("*******************" + productDTO);
         Product product = dtoToEntity(productDTO);
 
         List<String> imageUrls = productDTO.getFiles().stream()
@@ -243,6 +248,33 @@ public class ProductService {
                 .createdAt(product.getCreatedAt())
                 .quantity(quantity)
                 .supplierId(supplierDTO.getSupplierId())
+                .build();
+
+        List<ProductImage> imageList = product.getImageList();
+
+        if(imageList == null || imageList.isEmpty()){
+            return productDTO;
+        }
+
+        List<String> fileUrlList = imageList.stream().map(productImage -> productImage.getImageUrl()).toList();
+
+        productDTO.setUploadFileName(fileUrlList);
+
+        return productDTO;
+    }
+
+    // entity => dto
+    private ProductDTO entityToDtoOnlyProduct(Product product){
+        Optional<Inventory> inventoryOptional = inventoryRepository.findByProduct(product);
+        int quantity = inventoryOptional.map(Inventory::getQuantity).orElseThrow();
+
+        ProductDTO productDTO = ProductDTO.builder()
+                .productId(product.getProductId())
+                .name(product.getName())
+                .description(product.getDescription())
+                .price(product.getPrice())
+                .createdAt(product.getCreatedAt())
+                .quantity(quantity)
                 .build();
 
         List<ProductImage> imageList = product.getImageList();

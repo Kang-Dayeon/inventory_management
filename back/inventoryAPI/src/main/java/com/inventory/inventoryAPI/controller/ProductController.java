@@ -31,6 +31,11 @@ public class ProductController {
         return productService.getList(pageRequestDTO);
     }
 
+    @GetMapping("/all")
+    public List<ProductDTO> getAll(){
+        return productService.getAllList();
+    }
+
     @PutMapping("/{productId}")
     public void modify(@PathVariable Long productId, ProductDTO productDTO) throws IOException {
         productService.modifyProduct(productId, productDTO);

@@ -19,9 +19,14 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "where pi.ord = 0 and p.delFlag = false and s.delFlag = false")
     Page<Object[]> selectList(Pageable pageable);
 
-    @Query("SELECT p, s " +
-            "FROM Product p " +
-            "LEFT JOIN Supplier s ON p.supplier.supplierId = s.supplierId " +
-            "WHERE p.productId = :productId")
+    @Query("select p, s from Product p " +
+            "left join p.supplier s " +
+            "where p.delFlag = false and s.delFlag = false")
+    List<Product> selectAllList();
+
+    @Query("select p, s " +
+            "from Product p " +
+            "left join Supplier s on p.supplier.supplierId = s.supplierId " +
+            "where p.productId = :productId")
     List<Object[]> getProductWithSupplier(@Param("productId") Long productId);
 }
