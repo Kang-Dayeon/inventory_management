@@ -50,9 +50,9 @@ const ListPage = () => {
   return (
     <div>
       <div className='d-flex justify-content-between'>
-        <h3 className='font-weight-bold'>Product List</h3>
+        <h3 className='font-weight-bold'>商品リスト</h3>
         <Button className='font-weight-bold' onClick={handleClickAdd}>
-          ADD Product
+          商品追加
         </Button>
       </div>
       {/* table */}
@@ -60,22 +60,22 @@ const ListPage = () => {
         <thead>
           <tr>
             <th className='text-center'>
-              Name
+              商品名
             </th>
             <th className='text-center'>
-              Description
+              説明
             </th>
             <th className='text-center'>
-              Price
+              価額
             </th>
             <th className='text-center'>
-              Quantity
+              在庫
             </th>
             <th className='text-center'>
-              Create Date
+              作成日
             </th>
             <th style={{width: '200px'}} className='text-center'>
-              Add Transaction
+              取引追加
             </th>
           </tr>
         </thead>

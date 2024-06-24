@@ -76,7 +76,7 @@ const AddPage = () => {
 
     if(Object.values(newErrors).some(error => error)){
       setErrors(newErrors)
-      alert("Please fill out all required fields.")
+      alert("すべての必須フィールドに入力してください。")
       return
     }
 
@@ -112,16 +112,16 @@ const AddPage = () => {
 
   return (
     <div className='mb-5'>
-      <h3 className='font-weight-bold'>Product ADD</h3>
+      <h3 className='font-weight-bold'>商品追加</h3>
         <Form className='bg-white p-4 rounded shadow-md'>
           <FormGroup>
             <Label for="name" className='font-weight-bold'>
-              Product Name
+              商品名
             </Label>
             <Input
               id="name"
               name="name"
-              placeholder="Product Name"
+              placeholder="商品名"
               type="text"
               value={inputData.name}
               onChange={handleChangeInput}
@@ -129,19 +129,19 @@ const AddPage = () => {
             />
             {errors.name && (
               <FormFeedback>
-                Please write product name
+                商品名を入力して下さい。
               </FormFeedback>
             )}
           </FormGroup>
 
           <FormGroup>
             <Label for="description" className='font-weight-bold'>
-              Product Description
+              商品の説明
             </Label>
             <Input
               id="description"
               name="description"
-              placeholder="Product Description"
+              placeholder="商品の説明"
               type="textarea"
               value={inputData.description}
               onChange={handleChangeInput}
@@ -149,19 +149,19 @@ const AddPage = () => {
             />
             {errors.description && (
               <FormFeedback>
-                Please write product description
+                商品の説明を入力して下さい。
               </FormFeedback>
             )}
           </FormGroup>
 
           <FormGroup>
             <Label for="price" className='font-weight-bold'>
-              Product Price
+              商品の価額
             </Label>
             <NumericFormat
               id="price"
               name="price"
-              placeholder="ProductPrice"
+              placeholder="商品の価額"
               value={inputData.price}
               onValueChange={handlePriceChange}
               invalid={errors.price}
@@ -170,19 +170,19 @@ const AddPage = () => {
             />
             {errors.price && (
               <FormFeedback>
-                Please write product price
+                商品の価額を入力して下さい。
               </FormFeedback>
             )}
           </FormGroup>
 
           <FormGroup>
             <Label for="quantity" className='font-weight-bold'>
-              Quantity
+              商品の在庫
             </Label>
             <Input
               id="quantity"
               name="quantity"
-              placeholder="quantity"
+              placeholder="商品の在庫"
               type="number"
               value={inputData.quantity}
               onChange={handleChangeInput}
@@ -192,7 +192,7 @@ const AddPage = () => {
           {supplier ? (
             <FormGroup>
             <Label for="supplier">
-              Select
+              取引先
             </Label>
             <Input
               id="supplier"
@@ -209,7 +209,7 @@ const AddPage = () => {
             </Input>
             {errors.supplierId && (
               <FormFeedback>
-                Please select supplier
+                取引先を選んで下さい。
               </FormFeedback>
             )}
           </FormGroup>
@@ -217,7 +217,7 @@ const AddPage = () => {
 
           <FormGroup>
             <Label for="ProductImage" className='font-weight-bold'>
-              Product Image
+              商品のイメージ
             </Label>
             <Input
               innerRef={uploadRef}
@@ -230,7 +230,7 @@ const AddPage = () => {
             />
             {errors.files && (
               <FormFeedback>
-                Please add product image
+                商品のイメージを追加して下さい。
               </FormFeedback>
             )}
             <FormText>
@@ -240,7 +240,7 @@ const AddPage = () => {
         
           <FormGroup className='d-flex justify-content-end'>
             <Button onClick={handleClickAdd} className='font-weight-bold'>
-              ADD
+              追加
             </Button>
           </FormGroup>
         </Form>

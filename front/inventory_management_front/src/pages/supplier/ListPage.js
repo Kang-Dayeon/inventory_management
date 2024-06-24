@@ -46,7 +46,6 @@ const ListPage = () => {
 
   useEffect(() => {
     getList({page, size}).then(data => {
-      console.log(data)
       setServerData(data)
     })
   }, [page, size, refresh])
@@ -54,9 +53,9 @@ const ListPage = () => {
   return (
     <div>
       <div className='d-flex justify-content-between'>
-        <h3 className='font-weight-bold'>Supplier List</h3>
+        <h3 className='font-weight-bold'>取引先のリスト</h3>
         <Button className='font-weight-bold' onClick={handleClickAdd}>
-          ADD Supplier
+          取引先追加
         </Button>
       </div>
         
@@ -65,19 +64,19 @@ const ListPage = () => {
           <thead>
             <tr>
               <th className='text-center'>
-                Name
+                社名
               </th>
               <th className='text-center'>
-                Tel
+                電話番号
               </th>
               <th className='text-center'>
-                Email
+                メール
               </th>
               <th className='text-center'>
-                modify
+                修正
               </th>
               <th className='text-center'>
-                delete
+                削除
               </th>
             </tr>
           </thead>

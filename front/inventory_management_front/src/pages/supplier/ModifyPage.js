@@ -12,7 +12,7 @@ import {
 import useCustomInput from '../../hooks/useCustomInput';
 import { useParams } from 'react-router-dom';
 
-const initState = {
+const initSupplier = {
   name: '',
   tel: '',
   email: ''
@@ -22,9 +22,8 @@ const ModifyPage = () => {
   const {supplierId} = useParams()
   const {moveToList} = useCustomMove()
 
-  const [serverData, setServerData] = useState(initState)
-
-  const {inputData, resetInput, handleChangeInput} = useCustomInput(serverData)
+  const [supplier, setSupplier] = useState(initSupplier)
+  const {inputData, resetInput, handleChangeInput} = useCustomInput(supplier)
 
   const [result, setResult] = useState(null)
   const [errors, setErrors] = useState({
@@ -34,7 +33,6 @@ const ModifyPage = () => {
   });
 
   const handleClickAdd = async () => {
-    console.log(!inputData.name, !inputData.tel, !inputData.email )
     // 입력 필드의 유효성 검사
     if (!inputData.name || !inputData.tel || !inputData.email) {
       setErrors({
@@ -42,14 +40,13 @@ const ModifyPage = () => {
         tel: !inputData.tel,
         email: !inputData.email,
       });
-      alert("Please fill out all required fields.")
+      alert("すべての必須フィールドに入力してください。")
       return;
     }
 
     try {
-      const data = await putOne(serverData.supplierId, inputData);
+      const data = await putOne(supplier.supplierId, inputData);
       setResult({ ...data });
-      console.log(serverData.supplierId, inputData)
     } catch (error) {
       console.error("There was an error with the request:", error);
     }
@@ -57,9 +54,8 @@ const ModifyPage = () => {
 
   useEffect(() => {
     getSupplierOne(supplierId).then((data) => {
-      setServerData(data)
+      setSupplier(data)
       resetInput(data)
-      console.log(data)
     })
   }, [])
 
@@ -67,7 +63,7 @@ const ModifyPage = () => {
     if (result) {
       moveToList();
       setResult(null);
-      resetInput(initState)
+      resetInput(initSupplier)
     }
   }, [result, moveToList]);
 
@@ -77,7 +73,7 @@ const ModifyPage = () => {
         <Form className='bg-white p-4 rounded shadow-md'>
           <FormGroup>
             <Label for="name" className='font-weight-bold'>
-              Supplier Name
+              社名
             </Label>
             <Input
               id="name"
@@ -90,14 +86,14 @@ const ModifyPage = () => {
             />
             {errors.name && (
               <FormFeedback>
-                Please write Supplier name
+                取引先の名を書いて下さい。
               </FormFeedback>
             )}
           </FormGroup>
 
           <FormGroup>
             <Label for="tel" className='font-weight-bold'>
-              Supplier Tel
+              取引先の電話番号
             </Label>
             <Input
               id="tel"
@@ -110,14 +106,14 @@ const ModifyPage = () => {
             />
             {errors.tel && (
               <FormFeedback>
-                Please write supplier tel
+                取引先の電話番号を書いて下さい。
               </FormFeedback>
             )}
           </FormGroup>
 
           <FormGroup>
             <Label for="email" className='font-weight-bold'>
-              Supplier Email
+              取引先のメール
             </Label>
             <Input
               id="email"
@@ -130,14 +126,14 @@ const ModifyPage = () => {
             />
             {errors.email && (
               <FormFeedback>
-                Please write supplier email
+                取引先のメールを書いて下さい。
               </FormFeedback>
             )}
           </FormGroup>
           
           <FormGroup className='d-flex justify-content-end'>
             <Button onClick={handleClickAdd} className='font-weight-bold'>
-              ADD
+              修正
             </Button>
           </FormGroup>
         </Form>

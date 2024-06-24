@@ -11,7 +11,7 @@ import {
 } from "reactstrap";
 import useCustomInput from '../../hooks/useCustomInput';
 
-const initState = {
+const initSupplier = {
   name: '',
   tell: '',
   email: ''
@@ -19,7 +19,7 @@ const initState = {
 
 const AddPage = () => {
   const {moveToList} = useCustomMove()
-  const {inputData, resetInput, handleChangeInput} = useCustomInput(initState)
+  const {inputData, resetInput, handleChangeInput} = useCustomInput(initSupplier)
 
   const [result, setResult] = useState(null)
   const [errors, setErrors] = useState({
@@ -36,7 +36,7 @@ const AddPage = () => {
         tel: !inputData.tel,
         email: !inputData.email,
       });
-      alert("Please fill out all required fields.")
+      alert("すべての必須フィールドに入力してください。")
       return;
     }
 
@@ -52,17 +52,17 @@ const AddPage = () => {
     if (result) {
       moveToList();
       setResult(null);
-      resetInput(initState)
+      resetInput(initSupplier)
     }
   }, [result, moveToList]);
 
   return (
     <div className='mb-5'>
-      <h3 className='font-weight-bold'>Supplier ADD</h3>
+      <h3 className='font-weight-bold'>取引先追加</h3>
         <Form className='bg-white p-4 rounded shadow-md'>
           <FormGroup>
             <Label for="name" className='font-weight-bold'>
-              Supplier Name
+              社名
             </Label>
             <Input
               id="name"
@@ -75,14 +75,14 @@ const AddPage = () => {
             />
             {errors.name && (
               <FormFeedback>
-                Please write Supplier name
+                取引先の名を入力して下さい。
               </FormFeedback>
             )}
           </FormGroup>
 
           <FormGroup>
             <Label for="tel" className='font-weight-bold'>
-              Supplier Tel
+              取引先の電話番号
             </Label>
             <Input
               id="tel"
@@ -95,14 +95,14 @@ const AddPage = () => {
             />
             {errors.tel && (
               <FormFeedback>
-                Please write supplier tel
+                取引先の電話番号を入力して下さい。
               </FormFeedback>
             )}
           </FormGroup>
 
           <FormGroup>
             <Label for="email" className='font-weight-bold'>
-              Supplier Email
+              取引先のメール            
             </Label>
             <Input
               id="email"
@@ -115,14 +115,14 @@ const AddPage = () => {
             />
             {errors.email && (
               <FormFeedback>
-                Please write supplier email
+                取引先のメールを入力して下さい。
               </FormFeedback>
             )}
           </FormGroup>
           
           <FormGroup className='d-flex justify-content-end'>
             <Button onClick={handleClickAdd} className='font-weight-bold'>
-              ADD
+            追加
             </Button>
           </FormGroup>
         </Form>

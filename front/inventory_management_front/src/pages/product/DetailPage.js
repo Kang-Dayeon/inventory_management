@@ -16,7 +16,7 @@ import {
 }from 'reactstrap';
 import { useParams } from 'react-router-dom';
 
-const initState = {
+const initProduct = {
   name: '',
   description: '',
   price: 0,
@@ -35,7 +35,7 @@ const initSupplier = {
 const DetailPage = () => {
   const {productId} = useParams()
   const {page, size, refresh, moveToModify, moveToList} = useCustomMove()
-  const [serverData, setServerData] = useState(initState)
+  const [product, setProduct] = useState(initProduct)
   const [supplier, setSupplier] = useState(initSupplier)
 
   const handleClickRemove = async () => {
@@ -50,19 +50,17 @@ const DetailPage = () => {
 
   useEffect(() => {
     getOne(productId).then(data => {
-      setServerData(data)
-      console.log(data)
+      setProduct(data)
     })
   }, [page, size, refresh])
 
   useEffect(() => {
-    if(serverData.supplierId){
-      getSupplierOne(serverData.supplierId).then(data => {
-        console.log(data)
+    if(product.supplierId){
+      getSupplierOne(product.supplierId).then(data => {
         setSupplier(data)
       })
     }
-  }, [serverData])
+  }, [product])
 
   return (
     <div>
@@ -73,7 +71,7 @@ const DetailPage = () => {
       >
         <CardHeader>
           <CardTitle tag={"h3"}>
-            {serverData.name}
+            {product.name}
           </CardTitle>
         </CardHeader>
         <CardBody>
@@ -83,7 +81,7 @@ const DetailPage = () => {
                 価額
               </ListGroupItemHeading>
               <ListGroupItemText>
-                {serverData.price}円
+                {product.price}円
               </ListGroupItemText>
             </ListGroupItem>
             <ListGroupItem>
@@ -91,7 +89,7 @@ const DetailPage = () => {
                 在庫
               </ListGroupItemHeading>
               <ListGroupItemText>
-                {serverData.quantity}
+                {product.quantity}
               </ListGroupItemText>
             </ListGroupItem>
             <ListGroupItem>
@@ -99,7 +97,7 @@ const DetailPage = () => {
                 商品の説明
               </ListGroupItemHeading>
               <ListGroupItemText>
-                {serverData.description}
+                {product.description}
               </ListGroupItemText>
             </ListGroupItem>
             <ListGroupItem>
@@ -108,7 +106,7 @@ const DetailPage = () => {
             </ListGroupItemHeading>
               <List>
                 <li>
-                  会社名　：{supplier.name}
+                  会名　：{supplier.name}
                 </li>
                 <li>
                   連絡先　：{supplier.tel}
@@ -120,24 +118,24 @@ const DetailPage = () => {
             </ListGroupItem>
             <ListGroupItem>
               <ListGroupItemHeading className='font-weight-bold'>
-                商品のイメジ
+                商品のイメージ
               </ListGroupItemHeading>
             </ListGroupItem>
           </ListGroup>
         </CardBody>
         
         <CardBody>
-          {serverData.uploadFileName?.map((image) => (
+          {product.uploadFileName?.map((image) => (
             <img style={{width: '40%'}} src={image} />
           ))}
         </CardBody>
       
         <CardBody className="d-flex justify-content-end">
-          <Button onClick={() => moveToModify(serverData.productId)}>
-            Edit
+          <Button onClick={() => moveToModify(product.productId)}>
+            修正
           </Button>
-          <Button color="danger" className="ml-2" onClick={() => handleClickRemove(serverData.productId)}>
-            Delete
+          <Button color="danger" className="ml-2" onClick={() => handleClickRemove(product.productId)}>
+            削除
           </Button>
         </CardBody>
       </Card>

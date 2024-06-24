@@ -16,7 +16,7 @@ import {
 } from "reactstrap";
 import { useParams } from 'react-router-dom';
 
-const initState = {
+const initProduct = {
   name: '',
   description: '',
   price: 0,
@@ -30,18 +30,19 @@ const initState = {
 const ModifyPage = () => {
   const {productId} = useParams()
   const {moveToList} = useCustomMove()
-  const [serverData, setServerData] = useState(initState)
-  const {inputData, resetInput, handleChangeInput} = useCustomInput(serverData)
-
   const uploadRef = useRef(null);
+
+  const [product, setProduct] = useState(initProduct)
+  const {inputData, resetInput, handleChangeInput} = useCustomInput(product)
+
   const [supplier, setSupplier] = useState(null)
   const [productResult, setProductResult] = useState(null)
   const [errors, setErrors] = useState({});
 
   const deleteOldImage = (imageName) => {
-    const resultImageNames = serverData.uploadFileName.filter((image) => image !== imageName)
-    serverData.uploadFileName = resultImageNames
-    setServerData({...serverData})
+    const resultImageNames = product.uploadFileName.filter((image) => image !== imageName)
+    product.uploadFileName = resultImageNames
+    setProduct({...product})
   }
 
   const handleClickAdd = async () => {
@@ -52,8 +53,8 @@ const ModifyPage = () => {
       formData.append("files", images[i])
     }
 
-    for(let i = 0; i < serverData.uploadFileName.length; i++){
-      formData.append("uploadFileName", serverData.uploadFileName[i])
+    for(let i = 0; i < product.uploadFileName.length; i++){
+      formData.append("uploadFileName", product.uploadFileName[i])
     }
     
     formData.append("name", inputData.name)
@@ -72,7 +73,7 @@ const ModifyPage = () => {
 
     if(Object.keys(newErrors).length > 0){
       setErrors(newErrors);
-      alert("Please fill out all required fields.")
+      alert("すべての必須フィールドに入力してください。")
       return;
     }
 
@@ -92,7 +93,7 @@ const ModifyPage = () => {
 
   useEffect(() => {
     getOne(productId).then(data => {
-      setServerData(data)
+      setProduct(data)
       resetInput(data)
     })
   }, [productId])
@@ -101,7 +102,7 @@ const ModifyPage = () => {
     if (productResult) {
       moveToList()
       setProductResult(null)
-      resetInput(initState)
+      resetInput(initProduct)
       if (uploadRef.current) {
         uploadRef.current.value = '';
       }
@@ -110,16 +111,16 @@ const ModifyPage = () => {
 
   return (
     <div className='mb-5'>
-      <h3 className='font-weight-bold'>Product ADD</h3>
+      <h3 className='font-weight-bold'>商品追加</h3>
         <Form className='bg-white p-4 rounded shadow-md'>
           <FormGroup>
             <Label for="name" className='font-weight-bold'>
-              Product Name
+              商品名
             </Label>
             <Input
               id="name"
               name="name"
-              placeholder="Product Name"
+              placeholder="商品名"
               type="text"
               value={inputData.name}
               onChange={handleChangeInput}
@@ -127,19 +128,19 @@ const ModifyPage = () => {
             />
             {errors.name && (
               <FormFeedback>
-                Please write product name
+                商品名を入力して下さい。
               </FormFeedback>
             )}
           </FormGroup>
 
           <FormGroup>
             <Label for="description" className='font-weight-bold'>
-              Product Description
+              商品の説明
             </Label>
             <Input
               id="description"
               name="description"
-              placeholder="Product Description"
+              placeholder="商品の説明"
               type="textarea"
               value={inputData.description}
               onChange={handleChangeInput}
@@ -147,19 +148,19 @@ const ModifyPage = () => {
             />
             {errors.description && (
               <FormFeedback>
-                Please write product description
+                商品の説明を入力して下さい。
               </FormFeedback>
             )}
           </FormGroup>
 
           <FormGroup>
             <Label for="price" className='font-weight-bold'>
-              Product Price
+              商品の価額
             </Label>
             <Input
               id="price"
               name="price"
-              placeholder="ProductPrice"
+              placeholder="商品の価額"
               type="number"
               value={inputData.price}
               onChange={handleChangeInput}
@@ -167,19 +168,19 @@ const ModifyPage = () => {
             />
             {errors.price && (
               <FormFeedback>
-                Please write product price
+                商品の価額を入力して下さい。
               </FormFeedback>
             )}
           </FormGroup>
 
           <FormGroup>
             <Label for="quantity" className='font-weight-bold'>
-              Quantity
+              商品の在庫
             </Label>
             <Input
               id="quantity"
               name="quantity"
-              placeholder="quantity"
+              placeholder="商品の在庫"
               type="number"
               value={inputData.quantity}
               onChange={handleChangeInput}
@@ -189,7 +190,7 @@ const ModifyPage = () => {
           {supplier ? (
             <FormGroup>
             <Label for="supplier">
-              Select
+              取引先
             </Label>
             <Input
               id="supplier"
@@ -206,7 +207,7 @@ const ModifyPage = () => {
             </Input>
             {errors.supplierId && (
               <FormFeedback>
-                Please select supplier
+                取引先を選んで下さい。
               </FormFeedback>
             )}
           </FormGroup>
@@ -214,10 +215,10 @@ const ModifyPage = () => {
 
           <FormGroup>
             <Label for="ProductImage" className='font-weight-bold'>
-              Product Image
+              商品のイメージ
             </Label>
             <div className="d-flex">
-            {serverData.uploadFileName.map(image => (
+            {product.uploadFileName.map(image => (
               <Card
                 style={{
                   width: '18rem'
@@ -228,7 +229,7 @@ const ModifyPage = () => {
                 />
                 <CardBody>
                   <Button onClick={() => deleteOldImage(image)}>
-                    Delete
+                    削除
                   </Button>
                 </CardBody>
               </Card>
@@ -246,7 +247,7 @@ const ModifyPage = () => {
             />
             {errors.files && (
               <FormFeedback>
-                Please add product image
+                商品のイメージを追加して下さい。
               </FormFeedback>
             )}
             <FormText>
@@ -256,7 +257,7 @@ const ModifyPage = () => {
         
           <FormGroup className='d-flex justify-content-end'>
             <Button onClick={handleClickAdd} className='font-weight-bold'>
-              ADD
+              追加
             </Button>
           </FormGroup>
         </Form>

@@ -34,7 +34,7 @@ const initProduct = {
   createAt: ''
 }
 
-const initState = {
+const initTransaction = {
   totalPrice: 0,
   quantity: 0
 }
@@ -49,20 +49,23 @@ const AddPage = () => {
   const {productId} = useParams()
   const {moveToList} = useCustomMove()
   const [serverData, setServerData] = useState(initProduct)
-  const [inputData, setInputData] = useState(initState)
+  const [inputData, setInputData] = useState(initTransaction)
   const [supplier, setSupplier] = useState(initSupplier)
+  const [formattedTotalPrice, setFormattedTotalPrice] = useState('0')
 
   const [result, setResult] = useState(null)
   const [errors, setErrors] = useState(false);
 
   const handleChangeInput = (e) => {
     const {value} = e.target
+    const totalPrice = serverData.price * value
     setInputData((prevData) => ({
       ...prevData,
-      totalPrice: serverData.price * value,
+      totalPrice: totalPrice,
       quantity: value
     }))
-    console.log(inputData.totalPrice)
+
+    setFormattedTotalPrice(totalPrice.toLocaleString())
   }
 
   const handleClickAdd = async () => {
@@ -70,7 +73,7 @@ const AddPage = () => {
     if (inputData.quantity === 0 || inputData.quantity > serverData.quantity) setErrors(true)
 
     if(errors){
-      alert("Please fill out all required fields.")
+      alert("すべての必須フィールドに入力してください。")
       return;
     }
 
@@ -91,7 +94,6 @@ const AddPage = () => {
   useEffect(() => {
     if(serverData.supplierId){
       getSupplierOne(serverData.supplierId).then(data => {
-        console.log(data)
         setSupplier(data)
       })
     }
@@ -101,13 +103,13 @@ const AddPage = () => {
     if (result) {
       moveToList()
       setResult(null)
-      setInputData(initState)
+      setInputData(initTransaction)
     }
   }, [result, moveToList]);
 
   return (
     <div className='mb-5'>
-      <h3 className='font-weight-bold'>Transaction ADD</h3>
+      <h3 className='font-weight-bold'>取引追加</h3>
         <Card
           style={{
             width: '100%'
@@ -162,7 +164,7 @@ const AddPage = () => {
               </ListGroupItem>
               <ListGroupItem>
                 <ListGroupItemHeading className='font-weight-bold'>
-                  商品のイメジ
+                  商品のイメージ
                 </ListGroupItemHeading>
               </ListGroupItem>
             </ListGroup>
@@ -179,44 +181,43 @@ const AddPage = () => {
         <Form className='bg-white p-4 rounded shadow-md'>
           <FormGroup>
             <Label for="price" className='font-weight-bold'>
-              Total Transaction Price
+              取引金額
             </Label>
             <Input
               id="totalPrice"
               name="totalPrice"
-              placeholder="Total Taransaction Price"
-              type="number"
-              value={inputData.totalPrice.toLocaleString()}
-              onChange={handleChangeInput}
+              placeholder="取引金額"
+              type="text"
+              value={formattedTotalPrice}
               disabled
             />
           </FormGroup>
 
           <FormGroup>
             <Label for="quantity" className='font-weight-bold'>
-              Transaction Quantity
+              取引数量
             </Label>
             <Input
               id="quantity"
               name="quantity"
-              placeholder="Transaction Quantity"
+              placeholder="取引数量"
               type="number"
               value={inputData.quantity}
               onChange={handleChangeInput}
             />
             {errors.quantity && (
               <FormFeedback>
-                Please write transaction quantity
+                取引数量を入力して下さい。
               </FormFeedback>
             )}
           </FormGroup>
 
           <FormGroup className='d-flex justify-content-end'>
-            <Button onClick={handleClickAdd} className='font-weight-bold'>
-              CANCEL
+            <Button onClick={moveToList} className='font-weight-bold'>
+              戻る
             </Button>
             <Button onClick={handleClickAdd} className='font-weight-bold'>
-              ADD
+              追加
             </Button>
           </FormGroup>
         </Form>
