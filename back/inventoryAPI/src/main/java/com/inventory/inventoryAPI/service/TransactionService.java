@@ -2,11 +2,9 @@ package com.inventory.inventoryAPI.service;
 
 import com.inventory.inventoryAPI.domain.Inventory;
 import com.inventory.inventoryAPI.domain.Product;
-import com.inventory.inventoryAPI.domain.Supplier;
 import com.inventory.inventoryAPI.domain.Transaction;
 import com.inventory.inventoryAPI.dto.PageRequestDTO;
 import com.inventory.inventoryAPI.dto.PageResponseDTO;
-import com.inventory.inventoryAPI.dto.SupplierDTO;
 import com.inventory.inventoryAPI.dto.TransactionDTO;
 import com.inventory.inventoryAPI.repository.InventoryRepository;
 import com.inventory.inventoryAPI.repository.ProductRepository;
@@ -19,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -36,6 +35,33 @@ public class TransactionService {
                 Sort.by("transactionId").descending());
 
         Page<Transaction> result = transactionRepository.findAll(pageable);
+
+        List<TransactionDTO> dtoList = result.getContent().stream()
+                .map(this::entityToDTO)
+                .collect(Collectors.toList());
+
+        long totalCount = result.getTotalElements();
+
+        return PageResponseDTO.<TransactionDTO>withAll()
+                .dtoList(dtoList)
+                .totalCount(totalCount)
+                .pageRequestDTO(pageRequestDTO)
+                .build();
+    }
+
+    public TransactionDTO getOne(Long transactionId){
+        Optional<Transaction> result = transactionRepository.findById(transactionId);
+        Transaction transaction = result.orElseThrow();
+
+        return entityToDTO(transaction);
+    }
+
+    public PageResponseDTO<TransactionDTO> getTransactions(PageRequestDTO pageRequestDTO, Long productId, LocalDateTime startDate, LocalDateTime endDate){
+        Pageable pageable = PageRequest.of(pageRequestDTO.getPage() - 1,
+                pageRequestDTO.getSize(),
+                Sort.by("transactionId"). descending());
+
+        Page<Transaction> result = transactionRepository.findByProductAndDate(pageable, productId, startDate, endDate);
 
         List<TransactionDTO> dtoList = result.getContent().stream()
                 .map(this::entityToDTO)
@@ -71,13 +97,30 @@ public class TransactionService {
         transactionRepository.save(transaction);
     }
 
+    public void modifyTransaction(TransactionDTO transactionDTO){
+        Optional<Transaction> result = transactionRepository.findById(transactionDTO.getTransactionId());
+        Transaction transaction = result.orElseThrow();
+
+        transaction.changeQuantity(transactionDTO.getQuantity());
+
+        transactionRepository.save(transaction);
+    }
+
+    public void removeTransaction(Long transactionId){
+        Optional<Transaction> result = transactionRepository.findById(transactionId);
+        Transaction transaction = result.orElseThrow();
+
+        transactionRepository.delete(transaction);
+    }
+
     private TransactionDTO entityToDTO(Transaction transaction){
         return TransactionDTO.builder()
                 .transactionId(transaction.getTransactionId())
                 .productName(transaction.getProduct().getName())
+                .productId(transaction.getProduct().getProductId())
                 .totalPrice(transaction.getTotalPrice())
                 .quantity(transaction.getQuantity())
-                .createdAt(transaction.getTransactionDate())
+                .transactionDate(transaction.getTransactionDate())
                 .build();
     }
 }

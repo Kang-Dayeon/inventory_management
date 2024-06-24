@@ -14,8 +14,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class TransactionDTO {
     private Long transactionId;
+    private Long productId;
     private String productName;
     private int quantity;
     private int totalPrice;
-    private LocalDateTime createdAt;
+    private LocalDateTime transactionDate;
 }

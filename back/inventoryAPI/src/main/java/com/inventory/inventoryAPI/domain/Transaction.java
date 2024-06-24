@@ -32,4 +32,8 @@ public class Transaction {
     @Column(nullable = false, updatable = false)
     @Builder.Default
     private LocalDateTime transactionDate = LocalDateTime.now();
+
+    public void changeQuantity(int quantity){
+        this.quantity = quantity;
+    }
 }
