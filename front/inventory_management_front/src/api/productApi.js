@@ -4,6 +4,12 @@ export const API_SERVER_HOST = 'http://localhost:8080'
 
 const prefix = `${API_SERVER_HOST}/api/product`
 
+export const getAllList = async () => {
+  const res = await axios.get(`${prefix}/all`)
+
+  return res.data
+}
+
 export const getList = async (pageParam) => {
   const {page, size} = pageParam
 
