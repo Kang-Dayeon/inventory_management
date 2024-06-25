@@ -15,9 +15,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPenToSquare,
   faTrashCan,
-  faFolderOpen
+  faFolderOpen,
+  faFileArrowDown
 } from "@fortawesome/free-solid-svg-icons";
 import { getAllList } from '../../api/productApi';
+import { getReport } from '../../api/reportApi';
 
 const initState = {
   dtoList: [],
@@ -39,6 +41,7 @@ const ListPage = () => {
   const [product, setProduct] = useState([])
 
   const [filter, setFilter] = useState({productId: '', dateRange: '', })
+  const [reportUrl, setReportUrl] = useState('')
 
   const handleClickDelete = (transactionId) => {
     const confirm = window.confirm("本当に削除しますか？ \n 取引履歴を削除しても商品の在庫は変わりません❗️")
@@ -61,6 +64,18 @@ const ListPage = () => {
       setServerData(data)
     })
   }
+
+  const handleGenerateReport = () => {
+    getReport({...filter}).then(data => {
+      setReportUrl(data)
+    })
+  }
+
+  useEffect(() => {
+    if(reportUrl.length > 0){
+      window.open(reportUrl, "_blank", "noopener, noreferrer")
+    }
+  }, [reportUrl])
 
   useEffect(() => {
     getList({page, size}).then(data => {
@@ -118,15 +133,15 @@ const ListPage = () => {
                     </option>
                 </Input>
               </Col>
-                <Button className='ml-2' onClick={handleClickSearch}>
-                  検索
-                </Button>
-              <Col>
-              </Col>
+              <Button className='ml-2' onClick={handleClickSearch}>
+                検索
+              </Button>
+              <Button className='ml-2' onClick={handleGenerateReport}>
+                <FontAwesomeIcon icon={faFileArrowDown} /> Excel
+              </Button>
             </Row>
           </Form>
         </div>
-        
       </div>
         
         {/* table */}
