@@ -31,6 +31,11 @@ public class ProductController {
         return productService.getList(pageRequestDTO);
     }
 
+    @GetMapping("/search")
+    public PageResponseDTO<ProductDTO> searchList(PageRequestDTO pageRequestDTO, String productName){
+        return productService.getSearchList(pageRequestDTO, productName);
+    }
+
     @GetMapping("/all")
     public List<ProductDTO> getAll(){
         return productService.getAllList();

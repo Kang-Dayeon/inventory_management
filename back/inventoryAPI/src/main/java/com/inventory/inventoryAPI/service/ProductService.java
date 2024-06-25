@@ -102,6 +102,56 @@ public class ProductService {
         return result.stream().map(this::entityToDtoOnlyProduct).collect(Collectors.toList());
     }
 
+    public PageResponseDTO<ProductDTO> getSearchList(PageRequestDTO pageRequestDTO, String productName){
+        Pageable pageable = PageRequest.of(pageRequestDTO.getPage() -1,
+                pageRequestDTO.getSize(),
+                Sort.by("productId").descending());
+
+        Page<Object[]> result = productRepository.searchProduct(pageable, productName);
+
+        List<ProductDTO> dtoList = result.get().map(arr -> {
+            ProductDTO productDTO = null;
+
+            Product product = (Product) arr[0];
+            ProductImage productImage = (ProductImage) arr[1];
+            Integer quantity = (Integer) arr[2];
+            Supplier supplier = (Supplier) arr[3];
+
+            SupplierDTO supplierDTO = supplier != null ?
+                    SupplierDTO.builder()
+                            .supplierId(supplier.getSupplierId())
+                            .name(supplier.getName())
+                            .tel(supplier.getTel())
+                            .email(supplier.getEmail())
+                            .build() :
+                    null;
+
+            productDTO = ProductDTO.builder()
+                    .productId(product.getProductId())
+                    .name(product.getName())
+                    .description(product.getDescription())
+                    .price(product.getPrice())
+                    .createdAt(product.getCreatedAt())
+                    .quantity(quantity)
+                    .supplierId(supplierDTO.getSupplierId())
+                    .build();
+
+            String imageStr = productImage.getImageUrl();
+            productDTO.setUploadFileName(List.of(imageStr));
+
+            return productDTO;
+        }).collect(Collectors.toList());
+
+        long totalCount = result.getTotalElements();
+
+        return PageResponseDTO.<ProductDTO>withAll()
+                .dtoList(dtoList)
+                .totalCount(totalCount)
+                .pageRequestDTO(pageRequestDTO)
+                .build();
+
+    }
+
     // modify
     @Transactional
     public void modifyProduct(Long productId, ProductDTO productDTO) throws IOException {

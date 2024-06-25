@@ -28,5 +28,12 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "from Product p " +
             "left join Supplier s on p.supplier.supplierId = s.supplierId " +
             "where p.productId = :productId")
-    List<Object[]> getProductWithSupplier(@Param("productId") Long productId);
+    List<Object[]> getProductWithSupplier(Long productId);
+
+    @Query("select p, pi, i.quantity, s from Product p " +
+            "left join p.imageList pi " +
+            "left join p.inventories i " +
+            "left join p.supplier s " +
+            "where pi.ord = 0 and p.delFlag = false and s.delFlag = false and p.name like %:productName")
+    Page<Object[]> searchProduct(Pageable pageable, String productName);
 }
