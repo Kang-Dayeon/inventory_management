@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import moment from 'moment';
-import { getList } from '../../api/productApi';
+import { getList, getSearchList } from '../../api/productApi';
 import useCustomMove from '../../hooks/useCustomMove';
 import PaginationComponent from '../../components/common/PaginationComponent';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -11,8 +11,13 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { 
   Table, 
-  Button
+  Button,
+  Form,
+  Row,
+  Col,
+  Input
 } from "reactstrap";
+import useCustomInput from '../../hooks/useCustomInput';
 
 const initState = {
   dtoList: [],
@@ -32,6 +37,7 @@ const ListPage = () => {
 
   const {page, size, refresh, moveToList, moveToRead} = useCustomMove()
   const [serverData, setServerData] = useState(initState)
+  const {inputData, handleChangeInput} = useCustomInput({productName: ''})
 
   const handleClickAdd = useCallback(() => {
     navigate("/product/add")
@@ -39,6 +45,13 @@ const ListPage = () => {
 
   const handleClickTransaction = (productId) => {
     navigate(`/transaction/add/${productId}`, { replace: true })
+  }
+
+  const handleClickSearch = () => {
+    const productName = inputData.productName
+    getSearchList({page, size, productName}).then(data => {
+      setServerData(data)
+    })
   }
 
   useEffect(() => {
@@ -51,9 +64,28 @@ const ListPage = () => {
     <div>
       <div className='d-flex justify-content-between'>
         <h3 className='font-weight-bold'>商品リスト</h3>
-        <Button className='font-weight-bold' onClick={handleClickAdd}>
-          商品追加
-        </Button>
+        <div className='d-flex'>
+        <Form className='d-flex'>
+          <Row className="row-cols-lg-auto g-3 align-items-center">
+            <Col>
+              <Input
+                  name="productName"
+                  type="text"
+                  value={inputData.productName}
+                  onChange={handleChangeInput}
+                >
+              </Input>
+            </Col>
+            <Button className='ml-2 font-weight-bold' onClick={handleClickSearch}>
+              検索
+            </Button>
+            <Button className='font-weight-bold ml-2' onClick={handleClickAdd}>
+              商品追加
+            </Button>
+          </Row>
+        </Form>
+        
+        </div>
       </div>
       {/* table */}
       <Table className='list-table mt-3' hover>

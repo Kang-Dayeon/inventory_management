@@ -18,6 +18,14 @@ export const getList = async (pageParam) => {
   return res.data
 }
 
+export const getSearchList = async (pageParam) => {
+  const {page, size, productName} = pageParam
+
+  const res = await axios.get(`${prefix}/search`, {params:{page, size, productName}})
+  
+  return res.data
+}
+
 export const getOne = async (productId) => {
   const res = await axios.get(`${prefix}/${productId}`)
 
