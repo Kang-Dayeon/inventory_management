@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +29,8 @@ public class TransactionService {
     private final ProductRepository productRepository;
     private final TransactionRepository transactionRepository;
     private final InventoryRepository inventoryRepository;
+    private final ExcelReportService excelReportService;
+    private final S3UploadService s3UploadService;
 
     public PageResponseDTO<TransactionDTO> getList(PageRequestDTO pageRequestDTO){
         Pageable pageable = PageRequest.of(pageRequestDTO.getPage() -1,
@@ -74,6 +77,22 @@ public class TransactionService {
                 .totalCount(totalCount)
                 .pageRequestDTO(pageRequestDTO)
                 .build();
+    }
+
+    public String generateAndUploadSalesReport(Long productId, LocalDateTime startDate, LocalDateTime endDate) throws IOException {
+        List<Transaction> result = transactionRepository.getSalesReport(productId, startDate, endDate);
+        List<TransactionDTO> transactions = result.stream().map(this::entityToDTO).collect(Collectors.toList());
+        byte[] reportContent = excelReportService.createExcelReport(transactions);
+
+        String reportFileName;
+        if(startDate == null || endDate == null){
+            LocalDateTime today = LocalDateTime.now();
+            reportFileName = "Sales_Report_" +  today + ".xlsx";
+        } else {
+            reportFileName = "Sales_Report_" + startDate.toLocalDate() + "_to_" + endDate.toLocalDate() + ".xlsx";
+        }
+
+        return s3UploadService.saveReportFile(reportContent, reportFileName, "sales-report");
     }
 
     @Transactional
