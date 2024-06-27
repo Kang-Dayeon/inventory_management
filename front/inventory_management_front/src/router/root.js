@@ -10,11 +10,16 @@ const Product = lazy(() => import("../pages/product/IndexPage"))
 const Supplier = lazy(() => import("../pages/supplier/IndexPage"))
 const Transaction = lazy(() => import("../pages/transaction/IndexPage"))
 const DashboardPage = lazy(() => import("../pages/DashboardPage"))
+const LoginPage = lazy(() => import("../pages/auth/LoginPage"))
 
 const root = createBrowserRouter ([
   {
     path: "",
     element: <Suspense fallback={Loading}><DashboardPage /></Suspense>
+  },
+  {
+    path: "/login",
+    element: <Suspense fallback={Loading}><LoginPage /></Suspense>
   },
   {
     path: "product",
