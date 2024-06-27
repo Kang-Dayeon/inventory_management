@@ -78,13 +78,15 @@ const ListPage = () => {
   }, [reportUrl])
 
   useEffect(() => {
+    getAllList().then(data => {
+      setProduct(data)
+    });
+
     getList({page, size}).then(data => {
       setServerData(data)
     })
-    getAllList().then(data => {
-      setProduct(data)
-    })
   }, [page, size, refresh])
+
 
   return (
     <div>
@@ -103,8 +105,8 @@ const ListPage = () => {
                     <option　value="">
                       商品
                     </option>
-                    {product.length > 0 ? (
-                      product.map(product => (
+                    {product?.length > 0 ? (
+                      product?.map(product => (
                         <option key={product.productId} value={product.productId}>{product.name}</option>
                       ))
                     ):(
@@ -169,8 +171,8 @@ const ListPage = () => {
             </tr>
           </thead>
           <tbody>
-            {serverData.dtoList.length > 0 ? (
-              serverData.dtoList.map((transaction) => 
+            {serverData.dtoList?.length > 0 ? (
+              serverData.dtoList?.map((transaction) => 
                 <tr>
                 <td className='text-center'>
                   {transaction.productName}

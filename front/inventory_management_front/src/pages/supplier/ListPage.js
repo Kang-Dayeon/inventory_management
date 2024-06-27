@@ -46,6 +46,7 @@ const ListPage = () => {
 
   useEffect(() => {
     getList({page, size}).then(data => {
+      console.log(data)
       setServerData(data)
     })
   }, [page, size, refresh])
@@ -81,8 +82,8 @@ const ListPage = () => {
             </tr>
           </thead>
           <tbody>
-            {serverData.dtoList.length > 0 ? (
-              serverData.dtoList.map((supplier) => 
+            {serverData.dtoList?.length > 0 ? (
+              serverData.dtoList?.map((supplier) => 
                 <tr>
                 <td className='text-center'>
                   {supplier.name}

@@ -39,7 +39,7 @@ const PaginationComponent = ({serverData, moveToPage, pageName}) => {
         )}
 
         {/* page list */}
-        {serverData.pageNumList.map((pageNum) => (
+        {serverData.pageNumList?.map((pageNum) => (
           <PaginationItem key={pageNum} active={serverData.current === pageNum}>
             <PaginationLink onClick={() => moveToPage(pageName, {page: pageNum})}>
               {pageNum}
