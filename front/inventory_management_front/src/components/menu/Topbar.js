@@ -35,7 +35,7 @@ const Topbar = () => {
         <FontAwesomeIcon icon={faCartFlatbed} />
       </NavbarBrand>
       <div className="d-flex justify-content-center align-items-center header-right">
-        <p class="mb-0 font-weight-bold">{loginState.username} 様</p>
+        <p class="mb-0 font-weight-bold">{loginState.name} 様</p>
         <button className="icon-btn logout ml-2" onClick={handleClickLogout} id="logout">
           <FontAwesomeIcon icon={faRightFromBracket} />
         </button>

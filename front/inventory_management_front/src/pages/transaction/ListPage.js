@@ -43,11 +43,12 @@ const ListPage = () => {
   const [filter, setFilter] = useState({productId: '', dateRange: '', })
   const [reportUrl, setReportUrl] = useState('')
 
-  const handleClickDelete = (transactionId) => {
+  const handleClickDelete = async (transactionId) => {
     const confirm = window.confirm("本当に削除しますか？ \n 取引履歴を削除しても商品の在庫は変わりません❗️")
     if(confirm){
-      removeOne(transactionId)
-      moveToList()
+      await removeOne(transactionId).then(() =>{
+        moveToList()
+      })
     }
   }
 

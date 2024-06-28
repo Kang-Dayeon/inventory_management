@@ -59,21 +59,29 @@ const AddPage = () => {
   const handleChangeInput = (e) => {
     const {value} = e.target
     const totalPrice = serverData.price * value
+    
     setInputData((prevData) => ({
       ...prevData,
       totalPrice: totalPrice,
       quantity: value
     }))
 
+    console.log(inputData.quantity > serverData.quantity)
+
     setFormattedTotalPrice(totalPrice.toLocaleString())
   }
 
   const handleClickAdd = async () => {
     // 입력 필드의 유효성 검사
-    if (inputData.quantity === 0 || inputData.quantity > serverData.quantity) setErrors(true)
-
-    if(errors){
+    if (inputData.quantity === 0) {
+      setErrors(true)
       alert("すべての必須フィールドに入力してください。")
+      return
+    }
+
+    if (inputData.quantity > serverData.quantity) {
+      setErrors(true)
+      alert("在庫以上の数量を取引できません。")
       return;
     }
 
