@@ -17,6 +17,11 @@ import java.util.List;
 public class TransactionController {
     private final TransactionService transactionService;
 
+    @GetMapping("/total")
+    public int totalPrice(){
+        return transactionService.getTotalPrice();
+    }
+
     @PostMapping("/{productId}")
     public void createTransaction(@PathVariable("productId") Long productId, TransactionDTO transactionDTO){
         transactionService.createTransaction(productId, transactionDTO);

@@ -25,4 +25,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             "and (:startDate is null or t.transactionDate >= :startDate) " +
             "and (:endDate is null or t.transactionDate <= :endDate)")
     List<Transaction> getSalesReport(Long productId, LocalDateTime startDate, LocalDateTime endDate);
+
+    @Query("select sum(t.totalPrice) from Transaction t")
+    Integer findTotalPriceSum();
 }

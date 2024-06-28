@@ -31,6 +31,10 @@ public class ProductService {
     private final InventoryRepository inventoryRepository;
     private final SupplierRepository supplierRepository;
 
+    public long getProductCount(){
+        return productRepository.count();
+    }
+
     // get one
     public ProductDTO getOne(Long productId){
         List<Object[]> result = productRepository.getProductWithSupplier(productId);

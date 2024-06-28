@@ -16,6 +16,11 @@ import java.util.List;
 public class SupplierController {
     private final SupplierService supplierService;
 
+    @GetMapping("/total")
+    public Long totalSupplier(){
+        return supplierService.getSupplierCount();
+    }
+
     @PostMapping("/add")
     public SupplierDTO createSupplier(SupplierDTO supplierDTO) throws IOException {
         return supplierService.createSupplier(supplierDTO);

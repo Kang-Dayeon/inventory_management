@@ -32,6 +32,10 @@ public class TransactionService {
     private final ExcelReportService excelReportService;
     private final S3UploadService s3UploadService;
 
+    public int getTotalPrice(){
+        return transactionRepository.findTotalPriceSum();
+    }
+
     public PageResponseDTO<TransactionDTO> getList(PageRequestDTO pageRequestDTO){
         Pageable pageable = PageRequest.of(pageRequestDTO.getPage() -1,
                 pageRequestDTO.getSize(),

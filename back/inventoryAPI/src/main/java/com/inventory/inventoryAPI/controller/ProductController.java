@@ -16,6 +16,11 @@ import java.util.List;
 public class ProductController {
     private final ProductService productService;
 
+    @GetMapping("/total")
+    public Long totalProduct(){
+        return productService.getProductCount();
+    }
+
     @PostMapping("/add")
     public void createProduct(ProductDTO productDTO) throws IOException {
         productService.createProduct(productDTO);

@@ -22,6 +22,10 @@ import java.util.stream.Collectors;
 public class SupplierService {
     private final SupplierRepository supplierRepository;
 
+    public Long getSupplierCount(){
+        return supplierRepository.count();
+    }
+
     public SupplierDTO createSupplier(SupplierDTO supplierDTO) throws IOException {
         Supplier supplier = dtoToEntity(supplierDTO);
 
