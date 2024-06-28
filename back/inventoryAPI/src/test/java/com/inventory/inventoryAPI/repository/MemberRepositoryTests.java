@@ -19,6 +19,7 @@ public class MemberRepositoryTests {
     public void testInsertMember(){
         Member member = Member.builder()
                 .username("admin")
+                .name("amin1")
                 .password(passwordEncoder.encode("123123123"))
                 .email("test@admin.com")
                 .build();

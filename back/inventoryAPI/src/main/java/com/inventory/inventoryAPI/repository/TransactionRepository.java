@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -26,6 +27,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             "and (:endDate is null or t.transactionDate <= :endDate)")
     List<Transaction> getSalesReport(Long productId, LocalDateTime startDate, LocalDateTime endDate);
 
-    @Query("select sum(t.totalPrice) from Transaction t")
-    Integer findTotalPriceSum();
+    @Query("select sum(t.totalPrice) from Transaction t where t.transactionDate >= :oneMonthAgo")
+    Integer findTotalPriceSum(@Param("oneMonthAgo") LocalDateTime oneMonthAgo);
 }

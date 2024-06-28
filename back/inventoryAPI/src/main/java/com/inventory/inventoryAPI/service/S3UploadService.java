@@ -6,6 +6,7 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -15,8 +16,12 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class S3UploadService {
@@ -63,11 +68,24 @@ public class S3UploadService {
         return amazonS3.getUrl(bucket, fileName).toString();
     }
 
-    public void deleteFile(String key){
+    public void deleteFile(String fileUrl){
         try {
+            // URL에서 버킷 키만 추출하고 디코딩
+            // fileUrl = https://dy-inventory-bucket.s3.ap-northeast-1.amazonaws.com/product-images/ad34b92a-bf8f-4a07-a258-2e0ede2e9b66-KakaoTalk_Photo_2024-06-28-14-25-40%20003.jpeg
+            // URL 객체를 생성하면, 문자열로 표현된 URL을 분석하고 URL의 구성 요소에 접근
+            URL url = new URL(fileUrl);
+            String key = url.getPath().substring(1); // https://dy-inventory-bucket.s3.ap-northeast-1.amazonaws.com/ 제거
+
+            // key = product-images/ad34b92a-bf8f-4a07-a258-2e0ede2e9b66-KakaoTalk_Photo_2024-06-28-14-25-40 003.jpeg
+            key = URLDecoder.decode(key, StandardCharsets.UTF_8.toString());
+
+            log.info("Extracted key: " + key);
+
             DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest(bucket, key);
             amazonS3.deleteObject(deleteObjectRequest);
+            log.info("File deleted successfully: " + key);
         } catch (Exception e){
+            log.error("Failed to delete file: " + fileUrl, e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "fail file delete", e);
         }
     }

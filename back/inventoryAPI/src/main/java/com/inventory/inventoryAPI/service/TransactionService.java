@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,7 +34,9 @@ public class TransactionService {
     private final S3UploadService s3UploadService;
 
     public int getTotalPrice(){
-        return transactionRepository.findTotalPriceSum();
+        LocalDateTime oneMonthAgo = LocalDateTime.now().minus(1, ChronoUnit.MONTHS);
+        Integer totalPriceSum = transactionRepository.findTotalPriceSum(oneMonthAgo);
+        return totalPriceSum != null ? totalPriceSum : 0;
     }
 
     public PageResponseDTO<TransactionDTO> getList(PageRequestDTO pageRequestDTO){

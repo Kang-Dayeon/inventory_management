@@ -21,6 +21,8 @@ public class Member {
     @Column(unique = true)
     private String email;
 
+    private String name;
+
     @ElementCollection(fetch = FetchType.LAZY)
     @Builder.Default
     private List<MemberRole> memberRoles = new ArrayList<>();
