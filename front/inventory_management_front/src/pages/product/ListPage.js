@@ -35,8 +35,8 @@ const initState = {
 const ListPage = () => {
   const navigate = useNavigate()
 
-  const {page, size, refresh, moveToList, moveToRead} = useCustomMove()
   const [serverData, setServerData] = useState(initState)
+  const {page, size, refresh, moveToList, moveToRead} = useCustomMove()
   const {inputData, handleChangeInput} = useCustomInput({productName: ''})
 
   const handleClickAdd = useCallback(() => {
