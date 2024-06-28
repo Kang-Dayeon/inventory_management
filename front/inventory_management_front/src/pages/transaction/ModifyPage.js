@@ -225,7 +225,7 @@ const ModifyPage = () => {
             <Button onClick={handleClickAdd} className='font-weight-bold'>
               戻る
             </Button>
-            <Button onClick={handleClickAdd} className='font-weight-bold'>
+            <Button onClick={handleClickAdd} className='font-weight-bold ml-2'>
               追加
             </Button>
           </FormGroup>

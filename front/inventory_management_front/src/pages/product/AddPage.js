@@ -63,8 +63,6 @@ const AddPage = () => {
     formData.append("quantity", inputData.quantity)
     formData.append("supplierId", inputData.supplierId)
 
-    console.log(inputData)
-
     // 입력 필드의 유효성 검사
     const newErrors = {
       name: !inputData.name,
@@ -239,7 +237,10 @@ const AddPage = () => {
           </FormGroup>
         
           <FormGroup className='d-flex justify-content-end'>
-            <Button onClick={handleClickAdd} className='font-weight-bold'>
+            <Button onClick={moveToList} className='font-weight-bold' color="danger">
+              戻る
+            </Button>
+            <Button onClick={handleClickAdd} className='font-weight-bold ml-2'>
               追加
             </Button>
           </FormGroup>

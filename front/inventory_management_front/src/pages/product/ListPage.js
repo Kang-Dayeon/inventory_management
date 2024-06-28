@@ -56,7 +56,6 @@ const ListPage = () => {
 
   useEffect(() => {
     getList({page, size}).then(data => {
-      console.log(data)
       setServerData(data)
     })
   }, [page, size, refresh])

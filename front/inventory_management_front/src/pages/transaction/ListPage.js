@@ -105,8 +105,8 @@ const ListPage = () => {
                     <option　value="">
                       商品
                     </option>
-                    {product?.length > 0 ? (
-                      product?.map(product => (
+                    {product ? (
+                      product.map(product => (
                         <option key={product.productId} value={product.productId}>{product.name}</option>
                       ))
                     ):(
@@ -172,7 +172,7 @@ const ListPage = () => {
           </thead>
           <tbody>
             {serverData.dtoList?.length > 0 ? (
-              serverData.dtoList?.map((transaction) => 
+              serverData.dtoList.map((transaction) => 
                 <tr>
                 <td className='text-center'>
                   {transaction.productName}
@@ -200,7 +200,7 @@ const ListPage = () => {
               )
             ):(
               <tr>
-                <td colSpan='4' className='text-center'>
+                <td colSpan='6' className='text-center'>
                   No DataData... <FontAwesomeIcon icon={faFolderOpen} />
                 </td>
               </tr>

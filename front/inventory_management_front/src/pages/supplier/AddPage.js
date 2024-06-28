@@ -121,8 +121,11 @@ const AddPage = () => {
           </FormGroup>
           
           <FormGroup className='d-flex justify-content-end'>
-            <Button onClick={handleClickAdd} className='font-weight-bold'>
-            追加
+            <Button onClick={moveToList} className='font-weight-bold' color="danger">
+              戻る
+            </Button>
+            <Button onClick={handleClickAdd} className='font-weight-bold ml-2'>
+              追加
             </Button>
           </FormGroup>
         </Form>

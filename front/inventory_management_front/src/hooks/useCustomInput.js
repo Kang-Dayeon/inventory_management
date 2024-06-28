@@ -6,13 +6,10 @@ const useCustomInput = (defalutValue) => {
   const handleChangeInput = (e) => {
     const {value, name} = e.target
 
-    console.log(name, value)
-
     setInputData((prevData) => ({
       ...prevData,
       [name]: value
     }))
-    console.log(inputData)
   }
 
 
