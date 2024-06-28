@@ -3,6 +3,12 @@ import jwtAxios from "../util/jwtUtil";
 
 const prefix = `${API_SERVER_HOST}/api/supplier`
 
+export const getTotalSupplier = async () => {
+  const res = await jwtAxios.get(`${prefix}/total`)
+
+  return res.data
+}
+
 export const getList = async (pageParam) => {
   const {page, size} = pageParam
 

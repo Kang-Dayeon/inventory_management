@@ -4,6 +4,12 @@ export const API_SERVER_HOST = 'http://localhost:8080'
 
 const prefix = `${API_SERVER_HOST}/api/product`
 
+export const getTotalProduct = async () => {
+  const res = await jwtAxios.get(`${prefix}/total`)
+
+  return res.data
+}
+
 export const getAllList = async () => {
   const res = await jwtAxios.get(`${prefix}/all`)
 

@@ -3,6 +3,12 @@ import jwtAxios from "../util/jwtUtil";
 
 const prefix = `${API_SERVER_HOST}/api/transaction`
 
+export const getTotalTransaction = async () => {
+  const res = await jwtAxios.get(`${prefix}/total`)
+
+  return res.data
+}
+
 export const postAdd = async (productId, transaction) => {
   const header = {headers: {'Content-Type': 'multipart/form-data'}}
   const res = await jwtAxios.post(`${prefix}/${productId}`, transaction, header)
