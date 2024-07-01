@@ -1,6 +1,6 @@
 import jwtAxios from "../util/jwtUtil";
 
-export const API_SERVER_HOST = 'http://www.ddinventorymanagement.com:8080'
+export const API_SERVER_HOST = 'http://35.77.83.111:8080'
 
 const prefix = `${API_SERVER_HOST}/api/product`
 
