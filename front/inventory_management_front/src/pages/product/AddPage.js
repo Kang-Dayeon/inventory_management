@@ -13,7 +13,6 @@ import {
   Button, 
   FormFeedback 
 } from "reactstrap";
-import useCustomLoading from '../../hooks/useCustomLoading';
 
 const initProduct = {
   name: '',
@@ -26,7 +25,6 @@ const initProduct = {
 const AddPage = () => {
   const {moveToList} = useCustomMove()
   const {inputData, resetInput, handleChangeInput} = useCustomInput(initProduct)
-  const {doLoading, notLoading} = useCustomLoading()
 
   const uploadRef = useRef(null);
 
@@ -51,7 +49,6 @@ const AddPage = () => {
   }
 
   const handleClickAdd = async () => {
-    doLoading()
     const formData = new FormData()
 
     const images = uploadRef.current.files
@@ -97,7 +94,6 @@ const AddPage = () => {
 
   useEffect(() => {
     if (productResult) {
-      notLoading()
       moveToList();
       setProductResult(null);
       resetInput(initProduct)
