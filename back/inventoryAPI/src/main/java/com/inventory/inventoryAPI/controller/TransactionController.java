@@ -27,7 +27,7 @@ public class TransactionController {
         transactionService.createTransaction(productId, transactionDTO);
     }
 
-    @GetMapping("/")
+    @GetMapping("/list")
     public PageResponseDTO<TransactionDTO> list(PageRequestDTO pageRequestDTO){
         return transactionService.getList(pageRequestDTO);
     }

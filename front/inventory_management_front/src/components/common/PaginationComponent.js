@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
 
-const PaginationComponent = ({serverData, moveToPage, pageName}) => {
+const PaginationComponent = ({serverData, moveToPage}) => {
   return (
     <div className='d-flex justify-content-center'>
       <Pagination aria-label="Page navigation">
@@ -11,7 +11,7 @@ const PaginationComponent = ({serverData, moveToPage, pageName}) => {
           <PaginationItem>
             <PaginationLink
               first
-              onClick={() => moveToPage(pageName, {page: serverData.prevPage})}
+              onClick={() => moveToPage({page: serverData.prevPage})}
             />
           </PaginationItem>
         ):(
@@ -32,7 +32,7 @@ const PaginationComponent = ({serverData, moveToPage, pageName}) => {
         ):(
           <PaginationItem>
             <PaginationLink
-              onClick={() => moveToPage(pageName, {page: serverData.current - 1})}
+              onClick={() => moveToPage({page: serverData.current - 1})}
               previous
             />
           </PaginationItem>
@@ -41,7 +41,7 @@ const PaginationComponent = ({serverData, moveToPage, pageName}) => {
         {/* page list */}
         {serverData.pageNumList?.map((pageNum) => (
           <PaginationItem key={pageNum} active={serverData.current === pageNum}>
-            <PaginationLink onClick={() => moveToPage(pageName, {page: pageNum})}>
+            <PaginationLink onClick={() => moveToPage({page: pageNum})}>
               {pageNum}
             </PaginationLink>
           </PaginationItem>
@@ -57,7 +57,7 @@ const PaginationComponent = ({serverData, moveToPage, pageName}) => {
         ):(
           <PaginationItem>
             <PaginationLink
-              onClick={() => moveToPage(pageName, {page: serverData.current + 1})}
+              onClick={() => moveToPage({page: serverData.current + 1})}
               next
             />
           </PaginationItem>
@@ -66,7 +66,7 @@ const PaginationComponent = ({serverData, moveToPage, pageName}) => {
         {serverData.next ? (
           <PaginationItem>
             <PaginationLink
-              onClick={() => moveToPage(pageName, {page: serverData.nextPage})}
+              onClick={() => moveToPage({page: serverData.nextPage})}
               last
             />
           </PaginationItem>

@@ -1,6 +1,10 @@
 import jwtAxios from "../util/jwtUtil";
 
+// aws
 export const API_SERVER_HOST = 'http://35.77.83.111:8080'
+
+// local
+// export const API_SERVER_HOST = 'http://localhost:8080'
 
 const prefix = `${API_SERVER_HOST}/api/product`
 
@@ -19,7 +23,7 @@ export const getAllList = async () => {
 export const getList = async (pageParam) => {
   const {page, size} = pageParam
 
-  const res = await jwtAxios.get(`${prefix}/`, {params:{page,size}})
+  const res = await jwtAxios.get(`${prefix}/list`, {params:{page,size}})
 
   return res.data
 }

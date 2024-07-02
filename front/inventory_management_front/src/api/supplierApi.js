@@ -12,7 +12,7 @@ export const getTotalSupplier = async () => {
 export const getList = async (pageParam) => {
   const {page, size} = pageParam
 
-  const res = await jwtAxios.get(`${prefix}/`, {params:{page,size}})
+  const res = await jwtAxios.get(`${prefix}/list`, {params:{page,size}})
 
   return res.data
 }
@@ -24,7 +24,7 @@ export const getSupplierOne = async (supplierId) => {
 }
 
 export const getAllList = async () => {
-  const res = await jwtAxios.get(`${prefix}/list`)
+  const res = await jwtAxios.get(`${prefix}/all`)
 
   return res.data
 }

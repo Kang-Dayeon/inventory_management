@@ -19,7 +19,7 @@ export const postAdd = async (productId, transaction) => {
 export const getList = async (pageParam) => {
   const {page, size} = pageParam
 
-  const res = await jwtAxios.get(`${prefix}/`, {params:{page,size}})
+  const res = await jwtAxios.get(`${prefix}/list`, {params:{page,size}})
 
   return res.data
 }

@@ -31,12 +31,12 @@ public class SupplierController {
         return supplierService.getOne(supplierId);
     }
 
-    @GetMapping("/")
+    @GetMapping("/list")
     public PageResponseDTO<SupplierDTO> list(PageRequestDTO pageRequestDTO){
         return supplierService.getList(pageRequestDTO);
     }
 
-    @GetMapping("/list")
+    @GetMapping("/all")
     public List<SupplierDTO> getAllList(){
         return supplierService.getAllList();
     }

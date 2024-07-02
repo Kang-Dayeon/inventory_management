@@ -31,7 +31,7 @@ public class ProductController {
         return productService.getOne(productId);
     }
 
-    @GetMapping("/")
+    @GetMapping("/list")
     public PageResponseDTO<ProductDTO> list(PageRequestDTO pageRequestDTO){
         return productService.getList(pageRequestDTO);
     }
