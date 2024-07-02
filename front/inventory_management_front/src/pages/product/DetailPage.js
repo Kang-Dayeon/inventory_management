@@ -81,7 +81,7 @@ const DetailPage = () => {
                 価額
               </ListGroupItemHeading>
               <ListGroupItemText>
-                {product.price}円
+                {product.price.toLocaleString()}円
               </ListGroupItemText>
             </ListGroupItem>
             <ListGroupItem>

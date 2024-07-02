@@ -36,7 +36,7 @@ const initProduct = {
 
 const initTransaction = {
   totalPrice: 0,
-  quantity: 0
+  quantity: ''
 }
 
 const initSupplier = {

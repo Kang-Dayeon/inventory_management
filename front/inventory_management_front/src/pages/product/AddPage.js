@@ -17,8 +17,8 @@ import {
 const initProduct = {
   name: '',
   description: '',
-  price: 0,
-  quantity: 0,
+  price: '',
+  quantity: '',
   supplierId: null
 }
 
