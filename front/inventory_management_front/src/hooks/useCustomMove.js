@@ -14,7 +14,6 @@ const useCustomMove = () => {
   const [refresh, setRefresh] = useState(false)
 
   const [queryParams] = useSearchParams()
-  console.log(queryParams.get('page'))
 
   const page = getNum(queryParams.get('page'), 1)
   const size = getNum(queryParams.get('size'), 10)
